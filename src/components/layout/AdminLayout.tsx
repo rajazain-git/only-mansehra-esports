@@ -17,20 +17,30 @@ const AdminLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Basic protection
-    if (profile !== null) {
-      if (profile.role !== 'admin') {
-        navigate('/'); // Unauthorized
+    // Check if auth state has initialized. If user/profile is null, 
+    // it might just be loading, but since we don't have a strict loading state,
+    // we'll check if they are explicitly missing. 
+    // For a real app, you'd add a global `isAuthLoading` flag.
+    const checkAuth = setTimeout(() => {
+      if (profile) {
+        if (profile.role !== 'admin') {
+          navigate('/'); // Unauthorized user trying to access admin
+        }
+      } else if (!user) {
+        navigate('/admin/login'); // Not logged in
       }
-    } else if (user === null && profile === null) {
-        // give it a second to load, actually it's better to rely on a loading state
-        // for simplicity, if no user, send to login
-        // navigate('/login'); 
-    }
+    }, 1000); // 1s delay to allow Firebase auth to initialize on hard refresh
+
+    return () => clearTimeout(checkAuth);
   }, [user, profile, navigate]);
 
   if (!profile || profile.role !== 'admin') {
-    return <div className="min-h-screen flex items-center justify-center bg-background text-white">Loading Admin...</div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#030303] text-white">
+        <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-textMuted font-bold tracking-widest text-sm">VERIFYING CREDENTIALS...</p>
+      </div>
+    );
   }
 
   const handleLogout = async () => {

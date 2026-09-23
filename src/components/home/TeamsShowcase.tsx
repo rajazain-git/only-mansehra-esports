@@ -32,7 +32,7 @@ const TeamsShowcase = () => {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
               
               <div className="flex flex-col items-center text-center">
-                <div className="w-24 h-24 bg-gray-900 border border-gray-700 flex items-center justify-center mb-6 group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(229,9,20,0.3)] transition-all duration-300 rotate-45">
+                <div className="w-24 h-24 bg-gray-900 border border-gray-700 flex items-center justify-center mb-6 group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(224,0,42,0.3)] transition-all duration-300 rotate-45">
                   <span className="font-display text-3xl text-gray-500 group-hover:text-primary -rotate-45 transition-colors">{team.logo}</span>
                 </div>
                 

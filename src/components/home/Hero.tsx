@@ -18,10 +18,10 @@ const Background3D = () => {
 
   return (
     <>
-      <color attach="background" args={['#070707']} />
+      <color attach="background" args={['#050505']} />
       <ambientLight intensity={0.2} />
-      <pointLight position={[10, 10, 10]} color="#E50914" intensity={2} />
-      <pointLight position={[-10, -10, -10]} color="#FF6A00" intensity={1} />
+      <pointLight position={[10, 10, 10]} color="#E0002A" intensity={2} />
+      <pointLight position={[-10, -10, -10]} color="#D4D4D8" intensity={1} />
       
       <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
       
@@ -29,15 +29,15 @@ const Background3D = () => {
         <mesh ref={meshRef} position={[0, 0, -5]}>
           <icosahedronGeometry args={[3, 1]} />
           <meshStandardMaterial 
-            color="#111111" 
+            color="#0B0B0F" 
             wireframe 
-            emissive="#E50914" 
+            emissive="#E0002A" 
             emissiveIntensity={0.5} 
           />
         </mesh>
       </Float>
       
-      <fog attach="fog" args={['#070707', 5, 20]} />
+      <fog attach="fog" args={['#050505', 5, 20]} />
     </>
   );
 };
@@ -62,7 +62,7 @@ const Hero = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="mb-6 inline-block border border-primary/50 bg-primary/10 px-4 py-1 rounded-full text-primary text-xs font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(229,9,20,0.3)]"
+          className="mb-6 inline-block border border-primary/50 bg-primary/10 px-4 py-1 rounded-full text-primary text-xs font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(224,0,42,0.3)]"
         >
           Registration Open
         </motion.div>
@@ -74,7 +74,7 @@ const Hero = () => {
           className="font-display text-6xl md:text-8xl lg:text-9xl font-bold leading-none tracking-wider text-white drop-shadow-2xl mb-4"
         >
           FREE FIRE <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent text-glow">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-silver via-white to-primary text-glow">
             BATTLE ARENA
           </span>
         </motion.h1>
@@ -96,7 +96,7 @@ const Hero = () => {
         >
           <Link
             to="/register"
-            className="group relative px-8 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(229,9,20,0.5)] hover:shadow-[0_0_30px_rgba(229,9,20,0.8)] transition-all skew-x-[-15deg]"
+            className="group relative px-8 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
           >
             <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
             <div className="skew-x-[15deg]">REGISTER NOW</div>

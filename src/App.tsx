@@ -9,6 +9,8 @@ import Tournament from './pages/Tournament';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 
+import AdminLogin from './pages/admin/AdminLogin';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -24,6 +26,10 @@ const router = createBrowserRouter([
       { path: 'register', element: <Register /> },
       { path: 'dashboard', element: <Dashboard /> },
     ]
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLogin />
   },
   {
     path: '/admin',

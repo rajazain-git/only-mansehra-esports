@@ -118,7 +118,7 @@ const Tournament = () => {
             className="bg-secondary border border-gray-800 p-6 md:p-10 relative"
           >
             {/* Entry Fee Banner */}
-            <div className="absolute top-0 right-0 bg-primary px-6 py-2 text-white font-bold tracking-widest text-sm shadow-[0_0_15px_rgba(229,9,20,0.5)]">
+            <div className="absolute top-0 right-0 bg-primary px-6 py-2 text-white font-bold tracking-widest text-sm shadow-[0_0_15px_rgba(224,0,42,0.5)]">
               ENTRY FEE: {ENTRY_FEE} TOKENS
             </div>
 

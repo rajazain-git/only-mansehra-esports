@@ -11,29 +11,29 @@ const TournamentOverview = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Card 1 */}
-          <div className="bg-background border border-gray-800 p-8 hover:border-primary/50 transition-colors group">
-            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+          <div className="glass-card p-8 hover:border-primary/50 hover:box-glow transition-all duration-300 group">
+            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform border border-primary/20">
               <span className="font-display text-2xl">01</span>
             </div>
-            <h3 className="font-display text-2xl mb-2 text-white">REGISTER TEAM</h3>
+            <h3 className="font-display text-2xl mb-2 text-white group-hover:text-primary transition-colors">REGISTER TEAM</h3>
             <p className="text-sm text-textMuted">Gather your squad of 4 players, purchase entry tokens, and secure your slot in the qualifiers.</p>
           </div>
           
           {/* Card 2 */}
-          <div className="bg-background border border-gray-800 p-8 hover:border-primary/50 transition-colors group">
-            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+          <div className="glass-card p-8 hover:border-primary/50 hover:box-glow transition-all duration-300 group">
+            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform border border-primary/20">
               <span className="font-display text-2xl">02</span>
             </div>
-            <h3 className="font-display text-2xl mb-2 text-white">COMPETE</h3>
+            <h3 className="font-display text-2xl mb-2 text-white group-hover:text-primary transition-colors">COMPETE</h3>
             <p className="text-sm text-textMuted">Battle through intense qualifiers and semifinals. Only the best teams will reach the Grand Final.</p>
           </div>
           
           {/* Card 3 */}
-          <div className="bg-background border border-gray-800 p-8 hover:border-primary/50 transition-colors group">
-            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+          <div className="glass-card p-8 hover:border-primary/50 hover:box-glow transition-all duration-300 group">
+            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform border border-primary/20">
               <span className="font-display text-2xl">03</span>
             </div>
-            <h3 className="font-display text-2xl mb-2 text-white">WIN PRIZES</h3>
+            <h3 className="font-display text-2xl mb-2 text-white group-hover:text-primary transition-colors">WIN PRIZES</h3>
             <p className="text-sm text-textMuted">Dominate the leaderboard to claim your share of the massive prize pool and exclusive championship titles.</p>
           </div>
         </div>

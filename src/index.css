@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #070707;
-  --color-secondary: #111111;
-  --color-primary: #E50914;
-  --color-accent: #FF6A00;
-  --color-gold: #FFD166;
+  --color-background: #050505;
+  --color-secondary: #0B0B0F;
+  --color-primary: #E0002A;
+  --color-accent: #B00020;
+  --color-silver: #D4D4D8;
   --color-textMain: #F5F5F5;
-  --color-textMuted: #8A8A8A;
+  --color-textMuted: #A1A1AA;
   --font-sans: "Inter", sans-serif;
   --font-display: "Teko", sans-serif;
 }
@@ -26,9 +26,12 @@
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 10px rgba(229, 9, 20, 0.5), 0 0 20px rgba(229, 9, 20, 0.3);
+    text-shadow: 0 0 10px rgba(224, 0, 42, 0.5), 0 0 20px rgba(224, 0, 42, 0.3);
   }
   .box-glow {
-    box-shadow: 0 0 15px rgba(229, 9, 20, 0.3), inset 0 0 10px rgba(229, 9, 20, 0.1);
+    box-shadow: 0 0 15px rgba(224, 0, 42, 0.3), inset 0 0 10px rgba(224, 0, 42, 0.1);
+  }
+  .glass-card {
+    @apply bg-secondary/80 backdrop-blur-md border border-white/5 shadow-xl;
   }
 }

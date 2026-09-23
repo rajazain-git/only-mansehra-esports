@@ -92,7 +92,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/register"
-                className="px-6 py-2 bg-primary text-white font-bold text-sm skew-x-[-15deg] hover:bg-primary/80 transition-colors shadow-[0_0_15px_rgba(229,9,20,0.4)]"
+                className="px-6 py-2 bg-primary text-white font-bold text-sm skew-x-[-15deg] hover:bg-primary/80 transition-colors shadow-[0_0_15px_rgba(224,0,42,0.4)]"
               >
                 <div className="skew-x-[15deg]">REGISTER NOW</div>
               </Link>

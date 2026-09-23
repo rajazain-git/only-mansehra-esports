@@ -16,7 +16,7 @@ const FinalCTA = () => {
         
         <Link
           to="/register"
-          className="group relative px-10 py-5 bg-primary text-white font-bold text-lg tracking-widest overflow-hidden shadow-[0_0_30px_rgba(229,9,20,0.6)] hover:shadow-[0_0_50px_rgba(229,9,20,0.9)] transition-all skew-x-[-15deg]"
+          className="group relative px-10 py-5 bg-primary text-white font-bold text-lg tracking-widest overflow-hidden shadow-[0_0_30px_rgba(224,0,42,0.6)] hover:shadow-[0_0_50px_rgba(224,0,42,0.9)] transition-all skew-x-[-15deg]"
         >
           <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
           <div className="skew-x-[15deg]">REGISTER YOUR TEAM NOW</div>
