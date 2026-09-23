@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #070707;
+  --color-secondary: #111111;
+  --color-primary: #E50914;
+  --color-accent: #FF6A00;
+  --color-gold: #FFD166;
+  --color-textMain: #F5F5F5;
+  --color-textMuted: #8A8A8A;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Teko", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-textMain antialiased selection:bg-primary selection:text-white;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Teko', sans-serif;
+    text-transform: uppercase;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px rgba(229, 9, 20, 0.5), 0 0 20px rgba(229, 9, 20, 0.3);
+  }
+  .box-glow {
+    box-shadow: 0 0 15px rgba(229, 9, 20, 0.3), inset 0 0 10px rgba(229, 9, 20, 0.1);
+  }
+}

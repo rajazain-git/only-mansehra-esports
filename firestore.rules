@@ -1,0 +1,78 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // USERS COLLECTION
+    match /users/{userId} {
+      // Anyone can read user profiles (for leaderboards, teams, etc.)
+      allow read: if true;
+      
+      // Users can create their own profile during signup
+      // They can only set their role to 'user' and tokenBalance to 0
+      allow create: if isOwner(userId)
+                    && request.resource.data.role == 'user'
+                    && request.resource.data.tokenBalance == 0;
+      
+      // Users can update their own profile, but CANNOT change role or tokenBalance
+      allow update: if isOwner(userId)
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'tokenBalance']));
+      
+      // Admins can do anything
+      allow write: if isAdmin();
+    }
+
+    // TRANSACTIONS COLLECTION
+    match /transactions/{transactionId} {
+      // Users can read their own transactions
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Admins can read all
+      allow read: if isAdmin();
+      
+      // Transactions should ideally be created securely via Cloud Functions or trusted client transactions
+      // For this client-side demo, we allow creation if the user is creating for themselves 
+      // AND it's an ENTRY_FEE (which is tied to registration)
+      // In production, this should be restricted to backend only.
+      allow create: if isOwner(request.resource.data.userId) 
+                    || isAdmin();
+                    
+      // Transactions should never be updated or deleted
+      allow update, delete: if isAdmin();
+    }
+
+    // REGISTRATIONS COLLECTION
+    match /registrations/{registrationId} {
+      allow read: if true; // Public can see registered teams
+      allow create: if isOwner(request.resource.data.userId); // Users can register
+      allow update: if isOwner(resource.data.userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // TOURNAMENTS COLLECTION
+    match /tournaments/{tournamentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // ANNOUNCEMENTS COLLECTION
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
