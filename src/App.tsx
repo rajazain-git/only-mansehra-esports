@@ -3,7 +3,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './firebase/config';
-import { useAuthStore, UserProfile } from './store/useAuthStore';
+import { useAuthStore } from './store/useAuthStore';
+import type { UserProfile } from './store/useAuthStore';
 
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
