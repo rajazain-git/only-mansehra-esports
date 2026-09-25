@@ -84,6 +84,15 @@ const Navbar = () => {
                 <span className="text-xs text-textMuted">BALANCE</span>
                 <span className="font-display text-xl text-gold">{profile?.tokenBalance || 0}</span>
               </div>
+              <button 
+                onClick={async () => {
+                  const { logoutUser } = await import('../../firebase/auth');
+                  await logoutUser();
+                }}
+                className="text-xs font-bold text-red-500 hover:text-white transition-colors ml-4 border border-red-500/30 px-3 py-1 hover:bg-red-500/20"
+              >
+                LOGOUT
+              </button>
             </>
           ) : (
             <>
@@ -141,6 +150,16 @@ const Navbar = () => {
                   <span className="text-sm text-textMuted">BALANCE:</span>
                   <span className="font-display text-2xl text-gold">{profile?.tokenBalance || 0}</span>
                 </div>
+                <button 
+                  onClick={async () => {
+                    const { logoutUser } = await import('../../firebase/auth');
+                    await logoutUser();
+                    closeMobileMenu();
+                  }}
+                  className="text-left py-3 mt-4 text-red-500 font-bold border-t border-gray-800"
+                >
+                  LOGOUT
+                </button>
               </>
             ) : (
               <div className="flex flex-col gap-4 mt-2">
