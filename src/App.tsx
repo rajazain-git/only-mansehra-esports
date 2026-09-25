@@ -1,4 +1,10 @@
+import { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from './firebase/config';
+import { useAuthStore, UserProfile } from './store/useAuthStore';
+
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
 import Home from './pages/Home';
@@ -8,7 +14,6 @@ import Dashboard from './pages/Dashboard';
 import Tournament from './pages/Tournament';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
-
 import AdminLogin from './pages/admin/AdminLogin';
 
 const router = createBrowserRouter([
@@ -44,6 +49,34 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const { setUser, setProfile, setLoading } = useAuthStore();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        try {
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            setProfile(userDoc.data() as UserProfile);
+          } else {
+            setProfile(null);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+          setProfile(null);
+        }
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [setUser, setProfile, setLoading]);
+
   return (
     <RouterProvider router={router} />
   );
