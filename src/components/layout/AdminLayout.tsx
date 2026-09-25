@@ -12,29 +12,21 @@ const ADMIN_LINKS = [
 ];
 
 const AdminLayout = () => {
-  const { user, profile, setUser, setProfile } = useAuthStore();
+  const { user, profile, loading, setUser, setProfile } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Check if auth state has initialized. If user/profile is null, 
-    // it might just be loading, but since we don't have a strict loading state,
-    // we'll check if they are explicitly missing. 
-    // For a real app, you'd add a global `isAuthLoading` flag.
-    const checkAuth = setTimeout(() => {
-      if (profile) {
-        if (profile.role !== 'admin') {
-          navigate('/'); // Unauthorized user trying to access admin
-        }
-      } else if (!user) {
-        navigate('/admin/login'); // Not logged in
+    if (!loading) {
+      if (!user) {
+        navigate('/admin/login');
+      } else if (profile && profile.role !== 'admin') {
+        navigate('/');
       }
-    }, 1000); // 1s delay to allow Firebase auth to initialize on hard refresh
+    }
+  }, [user, profile, loading, navigate]);
 
-    return () => clearTimeout(checkAuth);
-  }, [user, profile, navigate]);
-
-  if (!profile || profile.role !== 'admin') {
+  if (loading || !profile || profile.role !== 'admin') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#030303] text-white">
         <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>

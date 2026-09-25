@@ -40,7 +40,15 @@ const AdminUsers = () => {
   };
 
   const handleAdjustTokens = async (type: 'ADD' | 'REMOVE') => {
-    if (!selectedUser || !tokenAmount || !reason) return;
+    if (!selectedUser) return;
+    if (!tokenAmount) {
+      alert("Please enter a token amount.");
+      return;
+    }
+    if (!reason) {
+      alert("Please enter a reason for this transaction.");
+      return;
+    }
     
     const amount = parseInt(tokenAmount);
     if (isNaN(amount) || amount <= 0) return;

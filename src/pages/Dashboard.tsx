@@ -6,14 +6,23 @@ import { motion } from 'framer-motion';
 import { LogOut, User, Mail, Phone, Wallet, Activity, CreditCard } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user, profile, setUser, setProfile } = useAuthStore();
+  const { user, profile, loading, setUser, setProfile } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       navigate('/login');
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-white">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-textMuted font-bold tracking-widest text-sm">LOADING COMMAND CENTER...</p>
+      </div>
+    );
+  }
 
   if (!user || !profile) return null;
 
