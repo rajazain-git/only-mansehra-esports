@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '../store/useAuthStore';
-import { registerTeamForTournament } from '../firebase/tournament';
+import { registerTeamForTournament, checkRegistrationStatus } from '../firebase/tournament';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, Loader2, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ENTRY_FEE = 50;
@@ -34,6 +34,21 @@ const Tournament = () => {
   const { user, profile } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isCheckingRegistration, setIsCheckingRegistration] = useState(true);
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (user) {
+        const registered = await checkRegistrationStatus(user.uid, TOURNAMENT_ID);
+        setIsRegistered(registered);
+      } else {
+        setIsRegistered(false);
+      }
+      setIsCheckingRegistration(false);
+    };
+    checkStatus();
+  }, [user]);
 
   const { register, control, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
@@ -105,19 +120,38 @@ const Tournament = () => {
           </p>
         </div>
 
-        {success ? (
+        {isCheckingRegistration ? (
+          <div className="bg-secondary/50 border border-gray-800 p-12 flex flex-col items-center justify-center">
+            <Loader2 size={40} className="text-primary animate-spin mb-4" />
+            <p className="text-textMuted font-bold tracking-widest text-sm">CHECKING REGISTRATION STATUS...</p>
+          </div>
+        ) : success || isRegistered ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-secondary border border-green-500/30 p-12 text-center"
+            className="bg-[#0B0B0F] border border-primary/30 p-12 text-center relative overflow-hidden"
           >
-            <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 size={40} className="text-green-500" />
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-[50px] pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-primary/10 rounded-full blur-[50px] pointer-events-none" />
+            
+            <div className="w-24 h-24 bg-primary/10 border border-primary/30 rounded-full flex items-center justify-center mx-auto mb-8 relative z-10">
+              <Trophy size={40} className="text-primary" />
             </div>
-            <h2 className="font-display text-4xl font-bold text-white mb-4">TEAM REGISTERED SUCCESSFULLY</h2>
-            <p className="text-textMuted mb-8">Your registration is pending admin approval. You can view your status in the dashboard.</p>
-            <Link to="/dashboard" className="px-8 py-3 bg-white text-black font-bold tracking-widest hover:bg-gray-200 transition-colors">
-              GO TO DASHBOARD
+            <h2 className="font-display text-4xl font-bold text-white mb-4 relative z-10">
+              {success ? "TEAM REGISTERED SUCCESSFULLY" : "ALREADY REGISTERED"}
+            </h2>
+            <p className="text-textMuted mb-10 max-w-lg mx-auto relative z-10 text-lg">
+              {success 
+                ? "Your registration is pending admin approval. Prepare your squad for the upcoming battles." 
+                : "Your squad is already registered for this tournament. Check your dashboard for the latest updates."}
+            </p>
+            <Link 
+              to="/dashboard" 
+              className="group relative inline-flex px-10 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.4)] hover:shadow-[0_0_30px_rgba(224,0,42,0.7)] transition-all skew-x-[-15deg] z-10"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
+              <div className="skew-x-[15deg]">GO TO DASHBOARD</div>
             </Link>
           </motion.div>
         ) : (
@@ -229,9 +263,22 @@ const Tournament = () => {
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="w-full py-5 bg-primary text-white font-bold tracking-widest text-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                className="group relative w-full py-5 bg-primary text-white font-bold tracking-widest text-lg overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.4)] hover:shadow-[0_0_40px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[0_0_20px_rgba(224,0,42,0.4)]"
               >
-                {isSubmitting ? <Loader2 size={24} className="animate-spin" /> : 'CONFIRM REGISTRATION'}
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+                <div className="skew-x-[15deg] flex items-center justify-center gap-3">
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={24} className="animate-spin" />
+                      <span>PROCESSING REGISTRATION...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trophy size={20} className="text-white/80" />
+                      <span>CONFIRM REGISTRATION</span>
+                    </>
+                  )}
+                </div>
               </button>
 
             </form>

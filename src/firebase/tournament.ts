@@ -1,4 +1,4 @@
-import { doc, collection, serverTimestamp, increment, runTransaction } from 'firebase/firestore';
+import { doc, collection, serverTimestamp, increment, runTransaction, query, where, getDocs } from 'firebase/firestore';
 import { db } from './config';
 
 export interface TeamRegistration {
@@ -64,5 +64,21 @@ export const registerTeamForTournament = async (
     return { success: true };
   } catch (error) {
     throw error;
+  }
+};
+
+// Check if user is already registered for a tournament
+export const checkRegistrationStatus = async (userId: string, tournamentId: string) => {
+  try {
+    const q = query(
+      collection(db, 'registrations'), 
+      where('userId', '==', userId),
+      where('tournamentId', '==', tournamentId)
+    );
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
+  } catch (error) {
+    console.error('Error checking registration status:', error);
+    return false;
   }
 };
