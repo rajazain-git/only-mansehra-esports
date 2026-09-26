@@ -49,6 +49,15 @@ const Tournament = () => {
 
   const onSubmit = async (data: RegistrationFormValues) => {
     setError(null);
+
+    // Validate unique UIDs across the team
+    const allUids = [data.captainUid.trim(), ...data.players.map(p => p.uid.trim())];
+    const uniqueUids = new Set(allUids);
+    if (uniqueUids.size !== allUids.length) {
+      setError("Duplicate UIDs detected! All 4 team members must have unique Free Fire UIDs.");
+      return;
+    }
+
     if (!user || !profile) {
       setError("You must be logged in to register.");
       return;
