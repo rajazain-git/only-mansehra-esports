@@ -101,32 +101,34 @@ const Hero = () => {
             <div className="px-8 py-4 bg-primary/50 text-white font-bold tracking-widest opacity-50 cursor-wait skew-x-[-15deg]">
               <div className="skew-x-[15deg]">LOADING...</div>
             </div>
-          ) : user ? (
-            <Link
-              to="/tournament"
-              className="group relative px-8 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
-            >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
-              <div className="skew-x-[15deg]">REGISTER TEAM</div>
-            </Link>
           ) : (
-            <Link
-              to="/register"
-              className="group relative px-8 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
-            >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
-              <div className="skew-x-[15deg]">REGISTER NOW</div>
-            </Link>
-          )}
+            <>
+              <Link
+                to={user ? "/tournament" : "/login"}
+                className="group relative px-6 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
+                <div className="skew-x-[15deg]">TEAM REGISTRATION</div>
+              </Link>
 
-          <Link
-            to={user ? "/dashboard" : "/tournament"}
-            className="group relative px-8 py-4 bg-transparent border border-gray-600 hover:border-white text-white font-bold tracking-widest overflow-hidden transition-all skew-x-[-15deg]"
-          >
-            <div className="skew-x-[15deg] group-hover:scale-105 transition-transform">
-              {user ? "DASHBOARD" : "VIEW TOURNAMENT"}
-            </div>
-          </Link>
+              <Link
+                to={user ? "/solo-tournament" : "/login"}
+                className="group relative px-6 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
+                <div className="skew-x-[15deg]">SOLO REGISTRATION</div>
+              </Link>
+
+              {user && (
+                <Link
+                  to="/dashboard"
+                  className="group relative px-6 py-4 bg-transparent border border-gray-600 hover:border-white text-white font-bold tracking-widest overflow-hidden transition-all skew-x-[-15deg]"
+                >
+                  <div className="skew-x-[15deg] group-hover:scale-105 transition-transform">DASHBOARD</div>
+                </Link>
+              )}
+            </>
+          )}
         </motion.div>
 
         {/* Countdown Placeholder */}

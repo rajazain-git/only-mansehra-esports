@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Tournament from './pages/Tournament';
+import SoloTournament from './pages/SoloTournament';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'tournament', element: <Tournament /> },
+      { path: 'solo-tournament', element: <SoloTournament /> },
       { path: 'schedule', element: <div className="p-20 text-center">Schedule Page Coming Soon</div> },
       { path: 'leaderboard', element: <div className="p-20 text-center">Leaderboard Page Coming Soon</div> },
       { path: 'rules', element: <div className="p-20 text-center">Rules Page Coming Soon</div> },
