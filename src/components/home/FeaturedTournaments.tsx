@@ -65,7 +65,25 @@ const FeaturedTournaments = () => {
   const activeTournament = TOURNAMENTS.find(t => t.id === activeId) || TOURNAMENTS[0];
 
   return (
-    <section className="py-20 relative bg-background border-t border-gray-800">
+    <section className="py-20 relative border-t border-gray-800 overflow-hidden bg-background">
+      {/* Background Video */}
+      {!shouldReduceMotion && (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-luminosity"
+        >
+          <source src="/videos/tournament-bg.mp4" type="video/mp4" />
+        </video>
+      )}
+      
+      {/* Dark Cinematic Overlay with Subtle Crimson Gradient */}
+      <div className="absolute inset-0 bg-background/70 z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-background z-0 pointer-events-none" />
+
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="mb-12">
