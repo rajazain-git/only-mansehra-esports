@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { ShieldAlert, Loader2, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const ENTRY_FEE = 50;
+const ENTRY_FEE = 40;
 const TOURNAMENT_ID = 'main-ff-arena-season-1';
 
 const playerSchema = z.object({
@@ -161,8 +161,9 @@ const Tournament = () => {
             className="bg-secondary border border-gray-800 p-6 md:p-10 relative"
           >
             {/* Entry Fee Banner */}
-            <div className="absolute top-0 right-0 bg-primary px-6 py-2 text-white font-bold tracking-widest text-sm shadow-[0_0_15px_rgba(224,0,42,0.5)]">
-              ENTRY FEE: {ENTRY_FEE} TOKENS
+            <div className="absolute top-0 right-0 bg-primary px-6 py-2 text-white font-bold tracking-widest text-sm shadow-[0_0_15px_rgba(224,0,42,0.5)] flex items-center gap-2">
+              <span>ENTRY FEE: {ENTRY_FEE} TOKENS</span>
+              <span className="text-white/70 text-xs">(10 PER PLAYER)</span>
             </div>
 
             <h3 className="font-display text-3xl font-bold text-white mb-8 mt-4 md:mt-0 border-b border-gray-800 pb-4">SQUAD DETAILS</h3>
@@ -254,7 +255,7 @@ const Tournament = () => {
                   <input type="checkbox" {...register('agreement')} className="mt-1 w-4 h-4 accent-primary" />
                   <div>
                     <span className="text-sm text-gray-300 block mb-1">I agree to the tournament rules and confirm that all provided details are correct.</span>
-                    <span className="text-xs text-primary font-bold">Registration fee of {ENTRY_FEE} Tokens will be deducted from your account.</span>
+                    <span className="text-xs text-primary font-bold">Registration fee of {ENTRY_FEE} Tokens (10 per player) will be deducted from your account.</span>
                     {errors.agreement && <p className="text-primary text-xs mt-1">{errors.agreement.message}</p>}
                   </div>
                 </label>
