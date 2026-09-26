@@ -18,7 +18,7 @@ const NAV_LINKS = [
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const { user, profile } = useAuthStore();
+  const { user, profile, loading } = useAuthStore();
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useUIStore();
 
   useEffect(() => {
@@ -69,7 +69,9 @@ const Navbar = () => {
 
         {/* Desktop Auth / Action Buttons */}
         <div className="hidden lg:flex items-center gap-4">
-          {user ? (
+          {loading ? (
+            <div className="w-24 h-8 bg-gray-800/50 animate-pulse skew-x-[-15deg]"></div>
+          ) : user ? (
             <>
               {profile?.role === 'admin' && (
                 <Link to="/admin" className="text-sm font-bold text-accent hover:text-white transition-colors">
@@ -140,7 +142,11 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="h-px bg-gray-800 my-2"></div>
-            {user ? (
+            {loading ? (
+              <div className="py-4 text-center text-textMuted text-sm font-bold tracking-widest animate-pulse">
+                LOADING...
+              </div>
+            ) : user ? (
               <>
                 <Link to="/dashboard" className="text-lg font-display tracking-widest text-white">DASHBOARD</Link>
                 {profile?.role === 'admin' && (

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Stars, Float } from '@react-three/drei';
 import * as THREE from 'three';
+import { useAuthStore } from '../../store/useAuthStore';
 
 // Lightweight 3D Background Component
 const Background3D = () => {
@@ -43,6 +44,8 @@ const Background3D = () => {
 };
 
 const Hero = () => {
+  const { user, loading } = useAuthStore();
+  
   return (
     <section className="relative w-full h-[calc(100vh-80px)] min-h-[600px] overflow-hidden flex items-center justify-center">
       {/* 3D Canvas Background */}
@@ -94,19 +97,35 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
           className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto"
         >
-          <Link
-            to="/register"
-            className="group relative px-8 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
-          >
-            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
-            <div className="skew-x-[15deg]">REGISTER NOW</div>
-          </Link>
+          {loading ? (
+            <div className="px-8 py-4 bg-primary/50 text-white font-bold tracking-widest opacity-50 cursor-wait skew-x-[-15deg]">
+              <div className="skew-x-[15deg]">LOADING...</div>
+            </div>
+          ) : user ? (
+            <Link
+              to="/tournament"
+              className="group relative px-8 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
+              <div className="skew-x-[15deg]">REGISTER TEAM</div>
+            </Link>
+          ) : (
+            <Link
+              to="/register"
+              className="group relative px-8 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
+              <div className="skew-x-[15deg]">REGISTER NOW</div>
+            </Link>
+          )}
 
           <Link
-            to="/tournament"
+            to={user ? "/dashboard" : "/tournament"}
             className="group relative px-8 py-4 bg-transparent border border-gray-600 hover:border-white text-white font-bold tracking-widest overflow-hidden transition-all skew-x-[-15deg]"
           >
-            <div className="skew-x-[15deg] group-hover:scale-105 transition-transform">VIEW TOURNAMENT</div>
+            <div className="skew-x-[15deg] group-hover:scale-105 transition-transform">
+              {user ? "DASHBOARD" : "VIEW TOURNAMENT"}
+            </div>
           </Link>
         </motion.div>
 

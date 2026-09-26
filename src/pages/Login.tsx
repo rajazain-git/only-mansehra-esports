@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -18,7 +18,14 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { setUser, setProfile } = useAuthStore();
+  const { user, setUser, setProfile } = useAuthStore();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
