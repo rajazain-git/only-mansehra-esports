@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Zap, Crown, Sparkles, Gem, ShieldAlert } from 'lucide-react';
+import { X, Zap, Crown, Sparkles, Gem, ShieldAlert, ArrowLeft, Send } from 'lucide-react';
 import clsx from 'clsx';
 
 interface BuyTokensModalProps {
@@ -102,6 +103,14 @@ const PACKAGES = [
 ];
 
 const BuyTokensModal = ({ isOpen, onClose }: BuyTokensModalProps) => {
+  const [selectedPackage, setSelectedPackage] = useState<typeof PACKAGES[0] | null>(null);
+
+  // Handle close and reset state
+  const handleClose = () => {
+    setSelectedPackage(null);
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -111,7 +120,7 @@ const BuyTokensModal = ({ isOpen, onClose }: BuyTokensModalProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm"
           />
 
@@ -121,96 +130,167 @@ const BuyTokensModal = ({ isOpen, onClose }: BuyTokensModalProps) => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-secondary/95 border border-gray-800 w-full max-w-6xl max-h-[90vh] overflow-y-auto pointer-events-auto relative shadow-2xl custom-scrollbar"
+              className="bg-secondary/95 border border-gray-800 w-full max-w-6xl max-h-[90vh] overflow-y-auto pointer-events-auto relative shadow-2xl custom-scrollbar flex flex-col"
             >
               {/* Header */}
               <div className="sticky top-0 z-10 bg-secondary/90 backdrop-blur-md border-b border-gray-800 p-6 flex justify-between items-center">
-                <div>
-                  <h2 className="font-display text-3xl font-bold text-white tracking-wider">
-                    ACQUIRE <span className="text-primary">TOKENS</span>
-                  </h2>
-                  <p className="text-textMuted text-sm mt-1">Fuel your esports journey. Select a package below.</p>
+                <div className="flex items-center gap-4">
+                  {selectedPackage && (
+                    <button 
+                      onClick={() => setSelectedPackage(null)}
+                      className="w-10 h-10 bg-gray-800/50 hover:bg-gray-700 text-white flex items-center justify-center transition-colors border border-gray-700 rounded-full"
+                    >
+                      <ArrowLeft size={20} />
+                    </button>
+                  )}
+                  <div>
+                    <h2 className="font-display text-3xl font-bold text-white tracking-wider">
+                      {selectedPackage ? "PAYMENT INSTRUCTIONS" : <>ACQUIRE <span className="text-primary">TOKENS</span></>}
+                    </h2>
+                    <p className="text-textMuted text-sm mt-1">
+                      {selectedPackage ? `Complete your purchase for the ${selectedPackage.name} package` : "Fuel your esports journey. Select a package below."}
+                    </p>
+                  </div>
                 </div>
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="w-10 h-10 bg-gray-800/50 hover:bg-gray-800 text-textMuted hover:text-white flex items-center justify-center transition-colors border border-gray-700 hover:border-gray-500"
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              {/* Grid */}
+              {/* Body */}
               <div className="p-6 md:p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {PACKAGES.map((pkg) => (
-                    <div
-                      key={pkg.id}
-                      className={clsx(
-                        "group relative bg-black/40 border border-gray-800 p-6 transition-all duration-300 flex flex-col h-full",
-                        pkg.glowClass,
-                        pkg.borderClass
-                      )}
-                    >
-                      {/* Badge */}
-                      {pkg.badge && (
-                        <div className={clsx(
-                          "absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-[10px] font-bold tracking-widest text-black shadow-lg z-10",
-                          pkg.bgClass
-                        )}>
-                          {pkg.badge}
+                {selectedPackage ? (
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="max-w-2xl mx-auto"
+                  >
+                    {/* Selected Package Summary */}
+                    <div className="bg-black/40 border border-gray-800 p-6 flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+                      <div className="flex items-center gap-4">
+                        <div className={clsx("p-3 bg-white/5 border border-white/10", selectedPackage.textClass)}>
+                          {selectedPackage.icon}
                         </div>
-                      )}
-
-                      {/* Header */}
-                      <div className="flex justify-between items-start mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className={clsx("p-2 bg-white/5 border border-white/10", pkg.textClass)}>
-                            {pkg.icon}
-                          </div>
-                          <h3 className={clsx("font-display text-xl tracking-widest", pkg.textClass)}>
-                            {pkg.name}
+                        <div>
+                          <h3 className={clsx("font-display text-2xl tracking-widest leading-none mb-1", selectedPackage.textClass)}>
+                            {selectedPackage.name} PACKAGE
                           </h3>
+                          <div className="text-textMuted text-sm">
+                            {selectedPackage.totalTokens} Tokens Total
+                          </div>
                         </div>
                       </div>
-
-                      {/* Tokens Math */}
-                      <div className="mb-6 flex-grow">
-                        <div className="flex items-end gap-2 mb-2">
-                          <span className="font-display text-5xl text-white leading-none">{pkg.totalTokens}</span>
-                          <span className="text-textMuted text-sm font-bold tracking-widest pb-1">TOKENS</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-sm text-textMuted bg-white/5 px-3 py-2 border border-white/5">
-                          <span>{pkg.baseTokens} Base</span>
-                          <span className="text-gray-600">+</span>
-                          <span className={pkg.textClass}>{pkg.bonusTokens} Bonus</span>
-                          {pkg.bonusText && <span className="text-xs opacity-70">{pkg.bonusText}</span>}
-                        </div>
-                      </div>
-
-                      {/* Footer / CTA */}
-                      <div className="mt-auto border-t border-gray-800 pt-6">
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="text-xs text-textMuted font-bold tracking-widest">PRICE</span>
-                          <span className="font-display text-2xl text-white">{pkg.price}</span>
-                        </div>
-                        <button
-                          onClick={() => alert('Checkout integration coming soon!')}
-                          className={clsx(
-                            "w-full py-3 font-bold tracking-widest text-sm transition-all duration-300 border",
-                            "bg-white/5 hover:bg-white/10 text-white",
-                            pkg.borderClass
-                          )}
-                          style={{
-                            boxShadow: `0 0 10px ${pkg.accentColor}20`
-                          }}
-                        >
-                          PURCHASE PACKAGE
-                        </button>
+                      <div className="text-center md:text-right">
+                        <div className="text-xs text-textMuted font-bold tracking-widest mb-1">TOTAL AMOUNT</div>
+                        <div className="font-display text-3xl text-white">{selectedPackage.price}</div>
                       </div>
                     </div>
-                  ))}
-                </div>
+
+                    {/* Payment Instructions */}
+                    <div className="space-y-6">
+                      <div className="bg-black/40 border border-gray-800 p-6 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+                        <label className="block text-xs font-bold text-textMuted mb-2 tracking-widest">EASYPAISA NUMBER</label>
+                        <div className="font-display text-2xl text-white tracking-widest">Coming Soon</div>
+                      </div>
+
+                      <div className="bg-black/40 border border-gray-800 p-6 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-green-500" />
+                        <label className="block text-xs font-bold text-textMuted mb-2 tracking-widest">WHATSAPP NUMBER</label>
+                        <div className="font-display text-2xl text-white tracking-widest">03140937500</div>
+                      </div>
+
+                      <div className="bg-primary/10 border border-primary/30 p-6 text-sm text-white/90 leading-relaxed font-medium">
+                        Please send your payment to the EasyPaisa number above once available, then take a screenshot of the payment confirmation and send it to the WhatsApp number provided. Once verified, your purchased tokens will be added to your account.
+                      </div>
+                      
+                      <a 
+                        href="https://wa.me/923140937500" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="group relative w-full py-5 bg-[#25D366] text-white font-bold tracking-widest text-lg overflow-hidden shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_40px_rgba(37,211,102,0.8)] transition-all flex items-center justify-center gap-3 mt-4"
+                      >
+                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+                        <Send size={20} className="relative z-10" />
+                        <span className="relative z-10">SEND SCREENSHOT ON WHATSAPP</span>
+                      </a>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {PACKAGES.map((pkg) => (
+                      <div
+                        key={pkg.id}
+                        className={clsx(
+                          "group relative bg-black/40 border border-gray-800 p-6 transition-all duration-300 flex flex-col h-full",
+                          pkg.glowClass,
+                          pkg.borderClass
+                        )}
+                      >
+                        {/* Badge */}
+                        {pkg.badge && (
+                          <div className={clsx(
+                            "absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-[10px] font-bold tracking-widest text-black shadow-lg z-10",
+                            pkg.bgClass
+                          )}>
+                            {pkg.badge}
+                          </div>
+                        )}
+
+                        {/* Header */}
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="flex items-center gap-3">
+                            <div className={clsx("p-2 bg-white/5 border border-white/10", pkg.textClass)}>
+                              {pkg.icon}
+                            </div>
+                            <h3 className={clsx("font-display text-xl tracking-widest", pkg.textClass)}>
+                              {pkg.name}
+                            </h3>
+                          </div>
+                        </div>
+
+                        {/* Tokens Math */}
+                        <div className="mb-6 flex-grow">
+                          <div className="flex items-end gap-2 mb-2">
+                            <span className="font-display text-5xl text-white leading-none">{pkg.totalTokens}</span>
+                            <span className="text-textMuted text-sm font-bold tracking-widest pb-1">TOKENS</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 text-sm text-textMuted bg-white/5 px-3 py-2 border border-white/5">
+                            <span>{pkg.baseTokens} Base</span>
+                            <span className="text-gray-600">+</span>
+                            <span className={pkg.textClass}>{pkg.bonusTokens} Bonus</span>
+                            {pkg.bonusText && <span className="text-xs opacity-70">{pkg.bonusText}</span>}
+                          </div>
+                        </div>
+
+                        {/* Footer / CTA */}
+                        <div className="mt-auto border-t border-gray-800 pt-6">
+                          <div className="flex justify-between items-center mb-4">
+                            <span className="text-xs text-textMuted font-bold tracking-widest">PRICE</span>
+                            <span className="font-display text-2xl text-white">{pkg.price}</span>
+                          </div>
+                          <button
+                            onClick={() => setSelectedPackage(pkg)}
+                            className={clsx(
+                              "w-full py-3 font-bold tracking-widest text-sm transition-all duration-300 border",
+                              "bg-white/5 hover:bg-white/10 text-white",
+                              pkg.borderClass
+                            )}
+                            style={{
+                              boxShadow: `0 0 10px ${pkg.accentColor}20`
+                            }}
+                          >
+                            PURCHASE PACKAGE
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </motion.div>
