@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { logoutUser } from '../firebase/auth';
 import { motion } from 'framer-motion';
 import { LogOut, User, Mail, Phone, Wallet, Activity, CreditCard } from 'lucide-react';
+import BuyTokensModal from '../components/dashboard/BuyTokensModal';
 
 const Dashboard = () => {
   const { user, profile, loading, setUser, setProfile } = useAuthStore();
+  const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,7 +70,10 @@ const Dashboard = () => {
               </h3>
               <div className="font-display text-6xl text-white mb-6">{profile.tokenBalance}</div>
               
-              <button className="w-full py-3 bg-gold/10 border border-gold/50 text-gold font-bold tracking-widest text-sm hover:bg-gold hover:text-background transition-colors flex items-center justify-center gap-2">
+              <button 
+                onClick={() => setIsBuyModalOpen(true)}
+                className="w-full py-3 bg-gold/10 border border-gold/50 text-gold font-bold tracking-widest text-sm hover:bg-gold hover:text-background transition-colors flex items-center justify-center gap-2"
+              >
                 <CreditCard size={16} /> BUY TOKENS
               </button>
             </motion.div>
@@ -151,6 +156,11 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      
+      <BuyTokensModal 
+        isOpen={isBuyModalOpen} 
+        onClose={() => setIsBuyModalOpen(false)} 
+      />
     </div>
   );
 };
