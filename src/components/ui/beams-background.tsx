@@ -33,7 +33,7 @@ function createBeam(width: number, height: number): Beam {
         angle: angle,
         speed: 0.6 + Math.random() * 1.2,
         opacity: 0.12 + Math.random() * 0.16,
-        hue: 190 + Math.random() * 70,
+        hue: 345 + Math.random() * 30, // Crimson / Red hue
         pulse: Math.random() * Math.PI * 2,
         pulseSpeed: 0.02 + Math.random() * 0.03,
     };
@@ -92,7 +92,7 @@ export function BeamsBackground({
                 (Math.random() - 0.5) * spacing * 0.5;
             beam.width = 100 + Math.random() * 100;
             beam.speed = 0.5 + Math.random() * 0.4;
-            beam.hue = 190 + (index * 70) / totalBeams;
+            beam.hue = 345 + (index * 30) / totalBeams; // Crimson / Red hue
             beam.opacity = 0.2 + Math.random() * 0.1;
             return beam;
         }
@@ -195,7 +195,7 @@ export function BeamsBackground({
                 }}
             />
 
-            <div className="relative z-10 flex h-full min-h-screen w-full items-center justify-center">
+            <div className="relative z-10 flex h-full min-h-full w-full items-center justify-center">
                 {children || (
                     <div className="flex flex-col items-center justify-center gap-6 px-4 text-center">
                         <motion.h1

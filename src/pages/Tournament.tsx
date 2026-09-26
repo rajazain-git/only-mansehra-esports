@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { ShieldAlert, Loader2, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { BeamsBackground } from '../components/ui/beams-background';
+
 const ENTRY_FEE = 40;
 const TOURNAMENT_ID = 'main-ff-arena-season-1';
 
@@ -100,8 +102,8 @@ const Tournament = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 bg-background">
-      <div className="container mx-auto max-w-4xl">
+    <BeamsBackground intensity="subtle" className="min-h-screen py-12 px-4">
+      <div className="container mx-auto max-w-4xl relative z-10">
         
         {/* Header */}
         <div className="text-center mb-12">
@@ -121,7 +123,7 @@ const Tournament = () => {
         </div>
 
         {isCheckingRegistration ? (
-          <div className="bg-secondary/50 border border-gray-800 p-12 flex flex-col items-center justify-center">
+          <div className="bg-secondary/50 backdrop-blur-md border border-gray-800 p-12 flex flex-col items-center justify-center relative z-10">
             <Loader2 size={40} className="text-primary animate-spin mb-4" />
             <p className="text-textMuted font-bold tracking-widest text-sm">CHECKING REGISTRATION STATUS...</p>
           </div>
@@ -129,7 +131,7 @@ const Tournament = () => {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#0B0B0F] border border-primary/30 p-12 text-center relative overflow-hidden"
+            className="bg-[#0B0B0F]/80 backdrop-blur-md border border-primary/30 p-12 text-center relative overflow-hidden z-10"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-[50px] pointer-events-none" />
@@ -158,7 +160,7 @@ const Tournament = () => {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-secondary border border-gray-800 p-6 md:p-10 relative"
+            className="bg-secondary/80 backdrop-blur-md border border-gray-800 p-6 md:p-10 relative z-10"
           >
             {/* Entry Fee Banner */}
             <div className="absolute top-0 right-0 bg-primary px-6 py-2 text-white font-bold tracking-widest text-sm shadow-[0_0_15px_rgba(224,0,42,0.5)] flex items-center gap-2">
@@ -286,7 +288,7 @@ const Tournament = () => {
           </motion.div>
         )}
       </div>
-    </div>
+    </BeamsBackground>
   );
 };
 

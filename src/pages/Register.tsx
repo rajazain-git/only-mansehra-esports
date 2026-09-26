@@ -8,6 +8,8 @@ import { useAuthStore } from '../store/useAuthStore';
 import { motion } from 'framer-motion';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
+import { BeamsBackground } from '../components/ui/beams-background';
+
 const registerSchema = z.object({
   fullName: z.string().min(2, { message: "Full Name is required" }),
   username: z.string().min(3, { message: "Username must be at least 3 characters" }),
@@ -55,13 +57,12 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center py-20 px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+    <BeamsBackground intensity="subtle" className="min-h-[calc(100vh-80px)] py-20 px-4">
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-lg bg-secondary border border-gray-800 p-8 relative z-10 shadow-2xl"
+        className="w-full max-w-lg bg-secondary/80 backdrop-blur-md border border-gray-800 p-8 relative z-10 shadow-2xl"
       >
         <div className="text-center mb-8">
           <h2 className="font-display text-4xl font-bold text-white tracking-wider">CREATE ACCOUNT</h2>
@@ -158,7 +159,7 @@ const Register = () => {
           </Link>
         </div>
       </motion.div>
-    </div>
+    </BeamsBackground>
   );
 };
 

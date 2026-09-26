@@ -8,6 +8,8 @@ import { useAuthStore } from '../store/useAuthStore';
 import { motion } from 'framer-motion';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
+import { BeamsBackground } from '../components/ui/beams-background';
+
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
@@ -50,14 +52,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center py-20 px-4 relative overflow-hidden">
-      {/* Background Effect */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-
+    <BeamsBackground intensity="subtle" className="min-h-[calc(100vh-80px)]">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-secondary border border-gray-800 p-8 relative z-10 shadow-2xl"
+        className="w-full max-w-md bg-secondary/80 backdrop-blur-md border border-gray-800 p-8 relative z-10 shadow-2xl"
       >
         <div className="text-center mb-8">
           <h2 className="font-display text-4xl font-bold text-white tracking-wider">LOGIN</h2>
@@ -113,7 +112,7 @@ const Login = () => {
           </Link>
         </div>
       </motion.div>
-    </div>
+    </BeamsBackground>
   );
 };
 
