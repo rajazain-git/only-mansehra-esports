@@ -142,9 +142,9 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-secondary/80 backdrop-blur-md border border-gray-800 p-8 shadow-xl relative overflow-hidden"
+              className="bg-[#0B0B0F]/95 border border-gray-800 p-8 shadow-xl relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[50px] rounded-full pointer-events-none -mt-20 -mr-20" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[30px] rounded-full pointer-events-none -mt-20 -mr-20" />
               
               <div className="flex justify-between items-center mb-8 border-b border-gray-800/50 pb-4 relative z-10">
                 <h3 className="font-display text-3xl text-white tracking-wider">MY TOURNAMENTS</h3>

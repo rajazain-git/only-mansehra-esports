@@ -247,9 +247,9 @@ export default function Registration() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-secondary/90 backdrop-blur-xl border border-primary/20 shadow-[0_0_50px_rgba(224,0,42,0.05)] p-6 md:p-10 relative overflow-hidden"
+          className="bg-[#0B0B0F]/95 border border-primary/20 shadow-xl p-6 md:p-10 relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full pointer-events-none -mr-40 -mt-40" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[50px] rounded-full pointer-events-none -mr-40 -mt-40" />
           {/* Pick type if BR allows both */}
           {tournament?.mode === 'BATTLE_ROYALE' && !registrationType && (
             <div className="text-center py-8">

@@ -35,24 +35,26 @@ export default function GameModes() {
   const filteredTournaments = tournaments.filter(t => t.mode === activeTab);
 
   return (
-    <BeamsBackground intensity="medium" className="min-h-screen py-24 px-4 relative overflow-hidden">
+    <BeamsBackground intensity="subtle" className="min-h-screen py-24 px-4 relative overflow-hidden">
       
+      {/* Optimized background glow using CSS gradient instead of expensive blur filter */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[800px] bg-[radial-gradient(ellipse_at_top,_rgba(224,0,42,0.15),_transparent_60%)] pointer-events-none" />
+
       <div className="container mx-auto max-w-6xl relative z-10">
         
         <div className="text-center mb-20 relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
           <motion.h1 
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="font-display text-5xl md:text-7xl font-bold text-white tracking-wider mb-6 relative z-10 drop-shadow-[0_0_15px_rgba(224,0,42,0.5)]"
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="font-display text-5xl md:text-7xl font-bold text-white tracking-wider mb-6 relative z-10 [text-shadow:0_0_15px_rgba(224,0,42,0.5)]"
           >
-            GAME <span className="text-primary drop-shadow-[0_0_25px_rgba(224,0,42,0.8)]">MODES</span>
+            GAME <span className="text-primary [text-shadow:0_0_25px_rgba(224,0,42,0.8)]">MODES</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.1 }}
             className="text-gray-300 max-w-2xl mx-auto text-lg font-light tracking-wide relative z-10"
           >
             Select your battlefield. Whether you fight alone, lead a squad, or face-off in an intense 1v1, your glory awaits.
@@ -76,16 +78,16 @@ export default function GameModes() {
               >
                 {/* Background layers */}
                 <div className={`absolute inset-0 transition-colors duration-300 ${
-                  isActive ? 'bg-primary' : 'bg-[#0B0B0F]/80 backdrop-blur-md border border-gray-800 group-hover:border-primary/50 group-hover:bg-primary/10'
+                  isActive ? 'bg-primary' : 'bg-[#0B0B0F]/95 border border-gray-800 group-hover:border-primary/50 group-hover:bg-primary/10'
                 }`} />
                 
-                {/* Active glow */}
+                {/* Active glow - optimized from blur to simple opacity + bg */}
                 {isActive && (
-                  <div className="absolute inset-0 bg-primary blur-md opacity-50 pointer-events-none" />
+                  <div className="absolute inset-0 bg-white/10 pointer-events-none" />
                 )}
 
                 <div className="relative z-10 flex items-center gap-3 skew-x-[10deg]">
-                  <Icon size={20} className={isActive ? 'animate-pulse' : ''} />
+                  <Icon size={20} />
                   {tab.label}
                 </div>
               </button>
@@ -120,11 +122,11 @@ export default function GameModes() {
                   filteredTournaments.map((tournament) => (
                     <motion.div 
                       key={tournament.id}
-                      whileHover={{ y: -10 }}
-                      className="group relative overflow-hidden flex flex-col bg-[#0B0B0F]/90 backdrop-blur-xl border border-gray-800 hover:border-primary/50 transition-all duration-500 shadow-2xl"
+                      whileHover={{ y: -5 }}
+                      className="group relative overflow-hidden flex flex-col bg-[#0B0B0F]/95 border border-gray-800 hover:border-primary/50 transition-colors duration-300 shadow-xl"
                     >
-                      {/* Animated Gradient Border effect on hover */}
-                      <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:via-transparent group-hover:to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                      {/* Optimized Hover Glow (no animating via gradient stops) */}
+                      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                       <div className="p-8 flex-grow relative z-10">
                         <div className="flex justify-between items-start mb-6">
@@ -133,7 +135,7 @@ export default function GameModes() {
                           </h3>
                           <span className={`px-3 py-1 text-xs font-bold tracking-widest uppercase border ${
                             tournament.registrationStatus === 'OPEN' 
-                              ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]' 
+                              ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-sm' 
                               : 'bg-red-500/10 text-red-500 border-red-500/30'
                           }`}>
                             {tournament.registrationStatus}
