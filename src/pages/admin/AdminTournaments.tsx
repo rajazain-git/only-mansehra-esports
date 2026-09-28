@@ -2,15 +2,16 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getTournaments, createTournament, updateTournament } from '../../firebase/admin_tournaments';
 import type { Tournament } from '../../firebase/admin_tournaments';
-import { Plus, Edit, DoorOpen, X, Image as ImageIcon, UploadCloud } from 'lucide-react';
-import { Timestamp } from 'firebase/firestore';
+import { Plus, Edit, X, Image as ImageIcon, UploadCloud, Trophy, Loader2 } from 'lucide-react';
+import { Timestamp, collection, query, where, getDocs, doc, runTransaction } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../../firebase/config';
+import { storage, db } from '../../firebase/config';
 
 export default function AdminTournaments() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTournamentModalOpen, setIsTournamentModalOpen] = useState(false);
+  const [isWinnerModalOpen, setIsWinnerModalOpen] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
 
   useEffect(() => {
@@ -90,9 +91,10 @@ export default function AdminTournaments() {
                   <Edit size={14} /> EDIT
                 </button>
                 <button 
-                  className="flex-1 flex items-center justify-center gap-2 bg-gray-800 hover:bg-primary hover:text-white text-textMuted py-2 text-xs font-bold tracking-widest transition-colors"
+                  onClick={() => { setSelectedTournament(t); setIsWinnerModalOpen(true); }}
+                  className="flex-1 flex items-center justify-center gap-2 bg-gold/10 border border-gold/30 hover:bg-gold hover:text-background text-gold py-2 text-xs font-bold tracking-widest transition-colors"
                 >
-                  <DoorOpen size={14} /> ROOMS
+                  <Trophy size={14} /> WINNER
                 </button>
               </div>
             </div>
@@ -104,6 +106,14 @@ export default function AdminTournaments() {
         <TournamentModal 
           tournament={selectedTournament} 
           onClose={() => setIsTournamentModalOpen(false)}
+          onSave={fetchTournaments}
+        />
+      )}
+
+      {isWinnerModalOpen && selectedTournament && (
+        <SelectWinnerModal 
+          tournament={selectedTournament}
+          onClose={() => setIsWinnerModalOpen(false)}
           onSave={fetchTournaments}
         />
       )}
@@ -381,6 +391,107 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
           </button>
         </div>
       </motion.div>
+    </div>
+  );
+}
+
+function SelectWinnerModal({ tournament, onClose, onSave }: { tournament: Tournament, onClose: () => void, onSave: () => void }) {
+  const [participants, setParticipants] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedWinnerId, setSelectedWinnerId] = useState<string>('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      try {
+        const q = query(collection(db, 'registrations'), where('tournamentId', '==', tournament.id), where('status', '==', 'APPROVED'));
+        const snap = await getDocs(q);
+        setParticipants(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Failed to load participants", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchParticipants();
+  }, [tournament.id]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedWinnerId) return alert("Select a winner first");
+    if (!window.confirm("Are you sure you want to declare this player as the winner? The tournament will be marked as COMPLETED and the celebration will be triggered for them!")) return;
+    
+    setSaving(true);
+    try {
+      await runTransaction(db, async (transaction) => {
+        // Mark winner
+        const regRef = doc(db, 'registrations', selectedWinnerId);
+        transaction.update(regRef, { status: 'WINNER', celebrationSeen: false });
+        
+        // Mark tournament completed
+        const tourneyRef = doc(db, 'tournaments', tournament.id);
+        transaction.update(tourneyRef, { registrationStatus: 'CLOSED' });
+      });
+      onSave();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to mark winner");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-secondary border border-gold/50 p-6 md:p-8 max-w-lg w-full relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+          <X size={24} />
+        </button>
+
+        <div className="flex items-center gap-3 mb-6">
+          <Trophy size={32} className="text-gold" />
+          <div>
+            <h2 className="font-display text-2xl font-bold text-gold tracking-wider">SELECT WINNER</h2>
+            <p className="text-textMuted text-sm">{tournament.name}</p>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-10"><Loader2 className="animate-spin text-gold" size={32} /></div>
+        ) : participants.length === 0 ? (
+          <div className="text-center py-10 text-gray-500 font-bold tracking-widest">
+            NO APPROVED PARTICIPANTS YET
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-xs font-bold text-textMuted tracking-widest mb-2">CHOOSE CHAMPION</label>
+              <select
+                value={selectedWinnerId}
+                onChange={e => setSelectedWinnerId(e.target.value)}
+                className="w-full bg-black/50 border border-gray-800 p-3 text-white focus:border-gold focus:outline-none"
+                required
+              >
+                <option value="">-- Select Winner --</option>
+                {participants.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.teamName || p.playerName} (UID: {p.gameUid || p.captainUid})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={saving || !selectedWinnerId}
+              className="w-full bg-gold/10 border border-gold/50 text-gold py-4 font-bold tracking-widest hover:bg-gold hover:text-background transition-colors disabled:opacity-50 flex justify-center"
+            >
+              {saving ? <Loader2 className="animate-spin" /> : "DECLARE WINNER & TRIGGER CELEBRATION"}
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
