@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
-import { LayoutDashboard, Users, Trophy, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Trophy, Settings, LogOut, ClipboardList } from 'lucide-react';
 import { logoutUser } from '../../firebase/auth';
 
 const ADMIN_LINKS = [
   { name: 'OVERVIEW', path: '/admin', icon: <LayoutDashboard size={18} /> },
+  { name: 'REGISTRATIONS', path: '/admin/registrations', icon: <ClipboardList size={18} /> },
   { name: 'USERS & TOKENS', path: '/admin/users', icon: <Users size={18} /> },
   { name: 'TOURNAMENTS', path: '/admin/tournaments', icon: <Trophy size={18} /> },
   { name: 'SETTINGS', path: '/admin/settings', icon: <Settings size={18} /> },

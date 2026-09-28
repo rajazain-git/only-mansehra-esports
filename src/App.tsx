@@ -18,6 +18,7 @@ import GameModes from './pages/GameModes';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminLogin from './pages/admin/AdminLogin';
+import AdminRegistrations from './pages/admin/AdminRegistrations';
 
 import Registration from './pages/Registration';
 import AdminTournaments from './pages/admin/AdminTournaments';
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminDashboard /> },
+      { path: 'registrations', element: <AdminRegistrations /> },
       { path: 'users', element: <AdminUsers /> },
       { path: 'tournaments', element: <AdminTournaments /> },
       { path: 'settings', element: <div className="p-10 text-textMuted">Settings Coming Soon</div> },
