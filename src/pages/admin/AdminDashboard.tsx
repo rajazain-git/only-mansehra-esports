@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Trophy, Coins, Activity, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { collection, query, orderBy, limit, getDocs, getAggregateFromServer, count, sum, where } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
 interface StatData {
@@ -27,39 +27,73 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // 1. Aggregations (Count & Sum)
+        // 1. Aggregations with individual error handling
         const usersColl = collection(db, 'users');
         const regColl = collection(db, 'registrations');
         const txColl = collection(db, 'transactions');
         const tourneyColl = collection(db, 'tournaments');
 
-        const [usersSnap, regSnap, txSnap, tourneySnap, pendingSnap] = await Promise.all([
-          getAggregateFromServer(usersColl, { total: count() }),
-          getAggregateFromServer(regColl, { total: count() }),
-          // Sum up tokens issued (transactions where amount was added by admin)
-          getAggregateFromServer(query(txColl, where('type', '==', 'ADMIN_ADD')), { total: sum('amount') }),
-          getAggregateFromServer(query(tourneyColl, where('registrationStatus', '==', 'OPEN')), { total: count() }),
-          getAggregateFromServer(query(regColl, where('status', '==', 'PENDING_APPROVAL')), { total: count() })
-        ]);
+        let totalUsers = 0;
+        let totalRegistrations = 0;
+        let totalTokensIssued = 0;
+        let activeTournaments = 0;
+        let pendingApprovals = 0;
+
+        try {
+          const uSnap = await getDocs(usersColl);
+          totalUsers = uSnap.size;
+        } catch (e) { console.error("Users error", e); }
+
+        try {
+          const rSnap = await getDocs(regColl);
+          totalRegistrations = rSnap.size;
+        } catch (e) { console.error("Reg error", e); }
+
+        try {
+          const tSnap = await getDocs(query(tourneyColl, where('registrationStatus', '==', 'OPEN')));
+          activeTournaments = tSnap.size;
+        } catch (e) { console.error("Tourney error", e); }
+
+        try {
+          const pSnap = await getDocs(query(regColl, where('status', '==', 'PENDING_APPROVAL')));
+          pendingApprovals = pSnap.size;
+        } catch (e) { console.error("Pending error", e); }
+
+        try {
+          // Manual sum to avoid missing composite index errors on sum() aggregations
+          const txSnap = await getDocs(query(txColl, where('type', '==', 'ADMIN_ADD')));
+          txSnap.forEach(doc => {
+            const data = doc.data();
+            totalTokensIssued += Number(data.amount || 0);
+          });
+        } catch (e) { console.error("Tx error", e); }
 
         // 2. Recent Registrations
         const regQ = query(regColl, orderBy('createdAt', 'desc'), limit(5));
-        const regDocs = await getDocs(regQ);
+        let regDocs: any[] = [];
+        try {
+          const r = await getDocs(regQ);
+          regDocs = r.docs.map(d => ({ id: d.id, ...d.data() }));
+        } catch (e) { console.error("Recent Reg error", e); }
         
         // 3. Recent Transactions
         const txQ = query(txColl, orderBy('createdAt', 'desc'), limit(5));
-        const txDocs = await getDocs(txQ);
+        let txDocs: any[] = [];
+        try {
+          const t = await getDocs(txQ);
+          txDocs = t.docs.map(d => ({ id: d.id, ...d.data() }));
+        } catch (e) { console.error("Recent Tx error", e); }
 
         setStats({
-          totalUsers: usersSnap.data().total,
-          totalRegistrations: regSnap.data().total,
-          totalTokensIssued: txSnap.data().total || 0,
-          activeTournaments: tourneySnap.data().total,
-          pendingApprovals: pendingSnap.data().total,
+          totalUsers,
+          totalRegistrations,
+          totalTokensIssued,
+          activeTournaments,
+          pendingApprovals,
         });
 
-        setRecentRegistrations(regDocs.docs.map(d => ({ id: d.id, ...d.data() })));
-        setRecentTransactions(txDocs.docs.map(d => ({ id: d.id, ...d.data() })));
+        setRecentRegistrations(regDocs);
+        setRecentTransactions(txDocs);
         
       } catch (err) {
         console.error("Failed to load dashboard data:", err);
