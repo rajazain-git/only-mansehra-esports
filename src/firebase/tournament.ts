@@ -76,7 +76,7 @@ export const checkRegistrationStatus = async (userId: string, tournamentId: stri
       where('tournamentId', '==', tournamentId)
     );
     const querySnapshot = await getDocs(q);
-    return !querySnapshot.empty;
+    return querySnapshot.docs.some(doc => doc.data().status !== 'REJECTED');
   } catch (error) {
     console.error('Error checking registration status:', error);
     return false;
@@ -155,7 +155,7 @@ export const checkSoloRegistrationStatus = async (userId: string, tournamentId: 
       where('tournamentId', '==', tournamentId)
     );
     const querySnapshot = await getDocs(q);
-    return !querySnapshot.empty;
+    return querySnapshot.docs.some(doc => doc.data().status !== 'REJECTED');
   } catch (error) {
     console.error('Error checking solo registration status:', error);
     return false;
@@ -212,7 +212,9 @@ export const registerPlayerOrTeam = async (
         where('tournamentId', '==', tournamentId)
       );
       const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
+      const hasActiveRegistration = querySnapshot.docs.some(doc => doc.data().status !== 'REJECTED');
+      
+      if (hasActiveRegistration) {
         throw new Error('User is already registered for this tournament');
       }
 
