@@ -8,7 +8,6 @@ import type { Tournament } from '../firebase/admin_tournaments';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { motion } from 'framer-motion';
 import { Loader2, ShieldAlert, Trophy } from 'lucide-react';
 
 const soloSchema = z.object({
@@ -176,10 +175,8 @@ export default function Registration() {
   if (success || isRegistered) {
     return (
       <div className="min-h-[calc(100vh-80px)] bg-[#060608] py-20 flex justify-center items-center">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-[#0B0B0F]/80 backdrop-blur-md border border-primary/30 p-12 text-center relative overflow-hidden z-10 max-w-2xl w-full mx-4"
+        <div 
+          className="bg-[#0B0B0F]/80 backdrop-blur-md border border-primary/30 p-12 text-center relative overflow-hidden z-10 max-w-2xl w-full mx-4 animate-fade-in-up"
         >
           <div className="w-24 h-24 bg-primary/10 border border-primary/30 rounded-full flex items-center justify-center mx-auto mb-8 relative z-10">
             <Trophy size={40} className="text-primary" />
@@ -199,7 +196,7 @@ export default function Registration() {
             <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
             <div className="skew-x-[15deg]">GO TO DASHBOARD</div>
           </Link>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -225,13 +222,11 @@ export default function Registration() {
       <div className="container mx-auto max-w-2xl relative z-10">
         
         <div className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mb-4 inline-block border border-primary/50 bg-primary/10 px-4 py-1 text-primary text-xs font-bold tracking-widest uppercase"
+          <div
+            className="mb-4 inline-block border border-primary/50 bg-primary/10 px-4 py-1 text-primary text-xs font-bold tracking-widest uppercase animate-fade-in"
           >
             {tournament?.mode.replace('_', ' ')} REGISTRATION
-          </motion.div>
+          </div>
           <h1 className="font-display text-5xl md:text-6xl font-bold text-white tracking-wider mb-4 uppercase">
             {tournament?.name}
           </h1>
@@ -247,10 +242,8 @@ export default function Registration() {
           </div>
         )}
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-[#0B0B0F]/95 border border-primary/20 shadow-xl p-6 md:p-10 relative overflow-hidden"
+        <div 
+          className="bg-[#0B0B0F]/95 border border-primary/20 shadow-xl p-6 md:p-10 relative overflow-hidden animate-fade-in-up"
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[50px] rounded-full pointer-events-none -mr-40 -mt-40" />
           {/* Pick type if BR allows both */}
@@ -398,8 +391,7 @@ export default function Registration() {
               </button>
             </form>
           )}
-
-        </motion.div>
+        </div>
       </div>
     </div>
   );
