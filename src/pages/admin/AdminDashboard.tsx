@@ -9,6 +9,7 @@ interface StatData {
   totalRegistrations: number;
   totalTokensIssued: number;
   activeTournaments: number;
+  pendingApprovals: number;
 }
 
 const AdminDashboard = () => {
@@ -17,6 +18,7 @@ const AdminDashboard = () => {
     totalRegistrations: 0,
     totalTokensIssued: 0,
     activeTournaments: 0,
+    pendingApprovals: 0,
   });
   const [recentRegistrations, setRecentRegistrations] = useState<any[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
@@ -31,12 +33,13 @@ const AdminDashboard = () => {
         const txColl = collection(db, 'transactions');
         const tourneyColl = collection(db, 'tournaments');
 
-        const [usersSnap, regSnap, txSnap, tourneySnap] = await Promise.all([
+        const [usersSnap, regSnap, txSnap, tourneySnap, pendingSnap] = await Promise.all([
           getAggregateFromServer(usersColl, { total: count() }),
           getAggregateFromServer(regColl, { total: count() }),
           // Sum up tokens issued (transactions where amount was added by admin)
           getAggregateFromServer(query(txColl, where('type', '==', 'ADMIN_ADD')), { total: sum('amount') }),
-          getAggregateFromServer(query(tourneyColl, where('registrationStatus', '==', 'OPEN')), { total: count() })
+          getAggregateFromServer(query(tourneyColl, where('registrationStatus', '==', 'OPEN')), { total: count() }),
+          getAggregateFromServer(query(regColl, where('status', '==', 'PENDING_APPROVAL')), { total: count() })
         ]);
 
         // 2. Recent Registrations
@@ -52,6 +55,7 @@ const AdminDashboard = () => {
           totalRegistrations: regSnap.data().total,
           totalTokensIssued: txSnap.data().total || 0,
           activeTournaments: tourneySnap.data().total,
+          pendingApprovals: pendingSnap.data().total,
         });
 
         setRecentRegistrations(regDocs.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -78,6 +82,7 @@ const AdminDashboard = () => {
   const STATS_UI = [
     { label: 'TOTAL USERS', value: stats.totalUsers.toLocaleString(), icon: <Users size={24} className="text-blue-500" /> },
     { label: 'REGISTRATIONS', value: stats.totalRegistrations.toLocaleString(), icon: <Trophy size={24} className="text-gold" /> },
+    { label: 'PENDING APPROVALS', value: stats.pendingApprovals.toLocaleString(), icon: <Activity size={24} className="text-yellow-500" /> },
     { label: 'TOKENS ISSUED', value: stats.totalTokensIssued.toLocaleString(), icon: <Coins size={24} className="text-accent" /> },
     { label: 'OPEN TOURNAMENTS', value: stats.activeTournaments.toLocaleString(), icon: <Activity size={24} className="text-primary" /> },
   ];
@@ -86,7 +91,7 @@ const AdminDashboard = () => {
     <div>
       <h1 className="font-display text-4xl font-bold mb-8 tracking-wider">OVERVIEW</h1>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
         {STATS_UI.map((stat, idx) => (
           <motion.div 
             key={idx}
