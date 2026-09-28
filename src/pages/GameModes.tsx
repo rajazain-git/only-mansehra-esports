@@ -115,6 +115,18 @@ export default function GameModes() {
                     >
                       <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
+                      {/* Poster Image */}
+                      {tournament.posterUrl && (
+                        <div className="h-48 w-full relative overflow-hidden border-b border-gray-800">
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0F] to-transparent z-10" />
+                          <img 
+                            src={tournament.posterUrl} 
+                            alt={tournament.name} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      )}
+
                       <div className="p-8 flex-grow relative z-10">
                         <div className="flex justify-between items-start mb-6">
                           <h3 className="font-display text-3xl font-bold text-white tracking-wider group-hover:text-primary transition-colors">

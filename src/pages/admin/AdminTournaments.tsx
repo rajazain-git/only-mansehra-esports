@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getTournaments, createTournament, updateTournament } from '../../firebase/admin_tournaments';
 import type { Tournament } from '../../firebase/admin_tournaments';
-import { Plus, Edit, DoorOpen, X } from 'lucide-react';
+import { Plus, Edit, DoorOpen, X, Image as ImageIcon, UploadCloud } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../../firebase/config';
 
 export default function AdminTournaments() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -121,20 +123,51 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
     startDateStr: tournament?.startDate ? new Date(tournament.startDate.toDate()).toISOString().slice(0, 16) : '',
   });
 
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [posterPreview, setPosterPreview] = useState<string>(tournament?.posterUrl || '');
+  const [uploading, setUploading] = useState(false);
+
   const [saving, setSaving] = useState(false);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setPosterFile(file);
+      setPosterPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     
+    let finalPosterUrl = tournament?.posterUrl || null;
+
+    if (posterFile) {
+      setUploading(true);
+      try {
+        const storageRef = ref(storage, `tournaments/${Date.now()}_${posterFile.name}`);
+        const snapshot = await uploadBytes(storageRef, posterFile);
+        finalPosterUrl = await getDownloadURL(snapshot.ref);
+      } catch (err) {
+        console.error("Error uploading image:", err);
+        alert("Failed to upload poster image.");
+        setUploading(false);
+        setSaving(false);
+        return;
+      }
+      setUploading(false);
+    }
+
     const dataToSave: any = {
       name: formData.name,
       mode: formData.mode,
       entryFee: Number(formData.entryFee),
       registrationStatus: formData.registrationStatus,
       maxParticipants: formData.maxParticipants ? Number(formData.maxParticipants) : null,
-      currentParticipants: tournament?.currentParticipants || 0, // ensure it defaults to 0 on create
+      currentParticipants: tournament?.currentParticipants || 0,
       startDate: formData.startDateStr ? Timestamp.fromDate(new Date(formData.startDateStr)) : null,
+      posterUrl: finalPosterUrl,
     };
 
     if (formData.mode === 'BATTLE_ROYALE') {
@@ -143,7 +176,7 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
         squad: formData.brSquad,
       };
     } else {
-      dataToSave.brOptions = null; // Clear if not BR
+      dataToSave.brOptions = null;
     }
 
     try {
@@ -180,6 +213,33 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
         <div className="p-6 overflow-y-auto">
           <form id="t-form" onSubmit={handleSubmit} className="space-y-4">
             
+            {/* Poster Upload Section */}
+            <div>
+              <label className="block text-xs font-bold text-textMuted tracking-widest mb-2">TOURNAMENT POSTER (OPTIONAL)</label>
+              <div className="relative group border-2 border-dashed border-gray-700 hover:border-primary/50 transition-colors rounded-sm overflow-hidden bg-black/30 flex items-center justify-center h-48">
+                {posterPreview ? (
+                  <>
+                    <img src={posterPreview} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity">
+                      <UploadCloud size={24} className="text-white mb-2" />
+                      <span className="text-white text-xs font-bold tracking-widest">CHANGE POSTER</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center text-gray-500">
+                    <ImageIcon size={32} className="mb-2 opacity-50" />
+                    <span className="text-xs font-bold tracking-widest">CLICK TO UPLOAD</span>
+                  </div>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-bold text-textMuted tracking-widest mb-2">TOURNAMENT NAME</label>
               <input 
@@ -295,10 +355,10 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
           <button 
             type="submit"
             form="t-form"
-            disabled={saving}
+            disabled={saving || uploading}
             className="flex-1 py-3 bg-primary hover:bg-primary/90 text-white font-bold tracking-widest text-sm transition-colors disabled:opacity-50"
           >
-            {saving ? 'SAVING...' : 'SAVE TOURNAMENT'}
+            {saving || uploading ? 'SAVING...' : 'SAVE TOURNAMENT'}
           </button>
         </div>
       </motion.div>

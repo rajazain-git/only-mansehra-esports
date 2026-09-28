@@ -16,6 +16,7 @@ export interface Tournament {
   startDate: Timestamp | null;
   maxParticipants?: number;
   currentParticipants?: number;
+  posterUrl?: string;
   createdAt: Timestamp;
 }
 
