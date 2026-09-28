@@ -142,6 +142,16 @@ export default function GameModes() {
                             <span className="text-gray-400 flex items-center gap-2"><Target size={16} className="text-primary"/> Entry Fee:</span>
                             <span className="text-primary font-bold tracking-wider">{tournament.entryFee} TOKENS</span>
                           </div>
+                          
+                          {tournament.maxParticipants && (
+                            <div className="flex items-center justify-between text-sm pb-2 border-b border-gray-800/50">
+                              <span className="text-gray-400 flex items-center gap-2"><Users size={16} className="text-primary"/> Slots:</span>
+                              <span className={`font-bold tracking-wider ${tournament.currentParticipants && tournament.currentParticipants >= tournament.maxParticipants ? 'text-red-500' : 'text-white'}`}>
+                                {tournament.currentParticipants || 0} / {tournament.maxParticipants}
+                              </span>
+                            </div>
+                          )}
+
                           {tournament.startDate && (
                             <div className="flex items-center justify-between text-sm pb-2">
                               <span className="text-gray-400 flex items-center gap-2"><Clock size={16} className="text-primary"/> Start Date:</span>
@@ -162,9 +172,9 @@ export default function GameModes() {
                         ) : (
                           <button 
                             disabled
-                            className="w-full flex items-center justify-center py-4 bg-gray-900/50 text-gray-600 font-bold tracking-widest text-sm cursor-not-allowed border border-gray-800"
+                            className="w-full flex items-center justify-center py-4 bg-gray-900/80 text-red-500/80 font-bold tracking-widest text-sm cursor-not-allowed border border-red-900/30 shadow-[inset_0_0_20px_rgba(220,38,38,0.1)]"
                           >
-                            REGISTRATION CLOSED
+                            SLOTS FULL
                           </button>
                         )}
                       </div>

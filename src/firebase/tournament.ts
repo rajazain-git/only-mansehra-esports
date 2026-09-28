@@ -171,11 +171,32 @@ export const registerPlayerOrTeam = async (
 ) => {
   try {
     await runTransaction(db, async (transaction) => {
+      // Get User
       const userRef = doc(db, 'users', userId);
       const userDoc = await transaction.get(userRef);
 
       if (!userDoc.exists()) {
         throw new Error('User does not exist');
+      }
+
+      // Get Tournament
+      const tournamentRef = doc(db, 'tournaments', tournamentId);
+      const tournamentDoc = await transaction.get(tournamentRef);
+      
+      if (!tournamentDoc.exists()) {
+        throw new Error('Tournament does not exist');
+      }
+      
+      const tournamentData = tournamentDoc.data();
+      if (tournamentData.registrationStatus === 'CLOSED') {
+        throw new Error('Tournament registration is closed');
+      }
+
+      const maxParticipants = tournamentData.maxParticipants;
+      const currentParticipants = tournamentData.currentParticipants || 0;
+
+      if (maxParticipants && currentParticipants >= maxParticipants) {
+        throw new Error('Tournament is already full (Slots Full)');
       }
 
       const currentBalance = userDoc.data().tokenBalance || 0;
@@ -200,7 +221,20 @@ export const registerPlayerOrTeam = async (
         tokenBalance: increment(-entryFee)
       });
 
-      // 2. Create Transaction Record
+      // 2. Update Tournament Participants Count
+      const newParticipantsCount = currentParticipants + 1;
+      const tournamentUpdates: any = {
+        currentParticipants: increment(1)
+      };
+      
+      // Auto-close if max participants reached
+      if (maxParticipants && newParticipantsCount >= maxParticipants) {
+        tournamentUpdates.registrationStatus = 'CLOSED';
+      }
+      
+      transaction.update(tournamentRef, tournamentUpdates);
+
+      // 3. Create Transaction Record
       const transactionRef = doc(collection(db, 'transactions'));
       transaction.set(transactionRef, {
         userId,
@@ -213,7 +247,7 @@ export const registerPlayerOrTeam = async (
         referenceId: tournamentId
       });
 
-      // 3. Create Registration Record
+      // 4. Create Registration Record
       const registrationRef = doc(collection(db, 'registrations'));
       transaction.set(registrationRef, {
         ...formData,

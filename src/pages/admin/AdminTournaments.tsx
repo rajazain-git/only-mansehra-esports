@@ -117,6 +117,7 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
     registrationStatus: tournament?.registrationStatus || 'OPEN',
     brSolo: tournament?.brOptions?.solo ?? true,
     brSquad: tournament?.brOptions?.squad ?? true,
+    maxParticipants: tournament?.maxParticipants || '',
     startDateStr: tournament?.startDate ? new Date(tournament.startDate.toDate()).toISOString().slice(0, 16) : '',
   });
 
@@ -131,6 +132,8 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
       mode: formData.mode,
       entryFee: Number(formData.entryFee),
       registrationStatus: formData.registrationStatus,
+      maxParticipants: formData.maxParticipants ? Number(formData.maxParticipants) : null,
+      currentParticipants: tournament?.currentParticipants || 0, // ensure it defaults to 0 on create
       startDate: formData.startDateStr ? Timestamp.fromDate(new Date(formData.startDateStr)) : null,
     };
 
@@ -255,15 +258,27 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-textMuted tracking-widest mb-2">START DATE (OPTIONAL)</label>
+                <label className="block text-xs font-bold text-textMuted tracking-widest mb-2">MAX PARTICIPANTS (OPTIONAL)</label>
                 <input 
-                  type="datetime-local" 
-                  value={formData.startDateStr}
-                  onChange={e => setFormData({...formData, startDateStr: e.target.value})}
+                  type="number" 
+                  min="1"
+                  value={formData.maxParticipants}
+                  onChange={e => setFormData({...formData, maxParticipants: e.target.value})}
                   className="w-full bg-black/50 border border-gray-800 p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                  style={{ colorScheme: 'dark' }}
+                  placeholder="e.g. 2 for Lone Wolf"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-textMuted tracking-widest mb-2">START DATE (OPTIONAL)</label>
+              <input 
+                type="datetime-local" 
+                value={formData.startDateStr}
+                onChange={e => setFormData({...formData, startDateStr: e.target.value})}
+                className="w-full bg-black/50 border border-gray-800 p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                style={{ colorScheme: 'dark' }}
+              />
             </div>
 
           </form>

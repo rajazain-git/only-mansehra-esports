@@ -8,7 +8,6 @@ import type { Tournament } from '../firebase/admin_tournaments';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BeamsBackground } from '../components/ui/beams-background';
 import { motion } from 'framer-motion';
 import { Loader2, ShieldAlert, Trophy } from 'lucide-react';
 
@@ -153,30 +152,30 @@ export default function Registration() {
 
   if (loading || tLoading || isCheckingReg) {
     return (
-      <BeamsBackground intensity="subtle" className="min-h-[calc(100vh-80px)] py-20">
+      <div className="min-h-[calc(100vh-80px)] bg-[#060608] py-20 flex justify-center items-center">
         <div className="flex flex-col items-center justify-center">
           <Loader2 size={40} className="text-primary animate-spin mb-4" />
           <p className="text-white font-bold tracking-widest text-sm">LOADING DETAILS...</p>
         </div>
-      </BeamsBackground>
+      </div>
     );
   }
 
   if (error && !tournament) {
     return (
-      <BeamsBackground intensity="subtle" className="min-h-[calc(100vh-80px)] py-20 flex justify-center">
+      <div className="min-h-[calc(100vh-80px)] bg-[#060608] py-20 flex justify-center items-center">
         <div className="bg-secondary border border-gray-800 p-12 text-center max-w-md w-full z-10">
           <ShieldAlert size={40} className="text-red-500 mx-auto mb-4" />
           <h2 className="text-white font-bold tracking-widest mb-2">ERROR</h2>
           <p className="text-textMuted">{error}</p>
         </div>
-      </BeamsBackground>
+      </div>
     );
   }
 
   if (success || isRegistered) {
     return (
-      <BeamsBackground intensity="subtle" className="min-h-[calc(100vh-80px)] py-20 flex justify-center">
+      <div className="min-h-[calc(100vh-80px)] bg-[#060608] py-20 flex justify-center items-center">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -201,24 +200,28 @@ export default function Registration() {
             <div className="skew-x-[15deg]">GO TO DASHBOARD</div>
           </Link>
         </motion.div>
-      </BeamsBackground>
+      </div>
     );
   }
 
   if (tournament?.registrationStatus === 'CLOSED') {
     return (
-      <BeamsBackground intensity="subtle" className="min-h-[calc(100vh-80px)] py-20 flex justify-center">
-        <div className="bg-secondary/80 backdrop-blur-md border border-gray-800 p-12 text-center max-w-md w-full z-10">
-          <ShieldAlert size={40} className="text-red-500 mx-auto mb-4" />
-          <h2 className="text-white font-bold tracking-widest mb-2">REGISTRATION CLOSED</h2>
-          <p className="text-textMuted">This tournament is no longer accepting new entries.</p>
+      <div className="min-h-[calc(100vh-80px)] bg-[#060608] py-20 flex justify-center items-center">
+        <div className="bg-[#0B0B0F] border border-red-900/50 p-12 text-center max-w-lg w-full shadow-[0_0_50px_rgba(220,38,38,0.05)] relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-red-600/50" />
+          <ShieldAlert size={50} className="text-red-600 mx-auto mb-6 opacity-80" />
+          <h2 className="font-display text-4xl font-bold text-red-500 tracking-[0.2em] mb-4">SLOTS FULL</h2>
+          <p className="text-gray-400 font-light tracking-wide text-lg">
+            This tournament has reached its maximum capacity. Keep an eye on the Game Modes section for future battlefields.
+          </p>
         </div>
-      </BeamsBackground>
+      </div>
     );
   }
 
   return (
-    <BeamsBackground intensity="subtle" className="min-h-[calc(100vh-80px)] py-12 px-4">
+    <div className="min-h-[calc(100vh-80px)] bg-[#060608] py-12 px-4 relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] max-w-[800px] bg-[radial-gradient(ellipse_at_top,_rgba(224,0,42,0.1),_transparent_70%)] pointer-events-none" />
       <div className="container mx-auto max-w-2xl relative z-10">
         
         <div className="text-center mb-12">
@@ -398,6 +401,6 @@ export default function Registration() {
 
         </motion.div>
       </div>
-    </BeamsBackground>
+    </div>
   );
 }

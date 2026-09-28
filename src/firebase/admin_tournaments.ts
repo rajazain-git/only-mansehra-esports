@@ -14,6 +14,8 @@ export interface Tournament {
   entryFee: number;
   registrationStatus: 'OPEN' | 'CLOSED';
   startDate: Timestamp | null;
+  maxParticipants?: number;
+  currentParticipants?: number;
   createdAt: Timestamp;
 }
 
