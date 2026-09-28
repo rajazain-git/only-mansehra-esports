@@ -8,7 +8,7 @@ import clsx from 'clsx';
 
 const NAV_LINKS = [
   { name: 'HOME', path: '/' },
-  { name: 'TOURNAMENT', path: '/tournament' },
+  { name: 'GAME MODES', path: '/modes' },
   { name: 'SCHEDULE', path: '/schedule' },
   { name: 'LEADERBOARD', path: '/leaderboard' },
   { name: 'RULES', path: '/rules' },

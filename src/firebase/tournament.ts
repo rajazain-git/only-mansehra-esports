@@ -161,3 +161,73 @@ export const checkSoloRegistrationStatus = async (userId: string, tournamentId: 
     return false;
   }
 };
+export const registerPlayerOrTeam = async (
+  userId: string,
+  tournamentId: string,
+  entryFee: number,
+  mode: string,
+  type: 'SOLO' | 'SQUAD',
+  formData: any
+) => {
+  try {
+    await runTransaction(db, async (transaction) => {
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await transaction.get(userRef);
+
+      if (!userDoc.exists()) {
+        throw new Error('User does not exist');
+      }
+
+      const currentBalance = userDoc.data().tokenBalance || 0;
+
+      if (currentBalance < entryFee) {
+        throw new Error('Insufficient Tokens');
+      }
+
+      // Check registration again inside transaction
+      const q = query(
+        collection(db, 'registrations'), 
+        where('userId', '==', userId),
+        where('tournamentId', '==', tournamentId)
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        throw new Error('User is already registered for this tournament');
+      }
+
+      // 1. Deduct Tokens
+      transaction.update(userRef, {
+        tokenBalance: increment(-entryFee)
+      });
+
+      // 2. Create Transaction Record
+      const transactionRef = doc(collection(db, 'transactions'));
+      transaction.set(transactionRef, {
+        userId,
+        type: 'ENTRY_FEE',
+        amount: entryFee,
+        balanceBefore: currentBalance,
+        balanceAfter: currentBalance - entryFee,
+        reason: `${type} Registration Fee for Tournament`,
+        createdAt: serverTimestamp(),
+        referenceId: tournamentId
+      });
+
+      // 3. Create Registration Record
+      const registrationRef = doc(collection(db, 'registrations'));
+      transaction.set(registrationRef, {
+        ...formData,
+        userId,
+        tournamentId,
+        mode,
+        type,
+        status: 'PENDING_APPROVAL',
+        createdAt: serverTimestamp(),
+      });
+    });
+
+    return { success: true };
+  } catch (error) {
+    throw error;
+  }
+};

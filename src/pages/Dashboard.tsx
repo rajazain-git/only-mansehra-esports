@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { logoutUser } from '../firebase/auth';
+import { getUserRegistrations } from '../firebase/user_dashboard';
+import { getTournaments } from '../firebase/admin_tournaments';
+import type { Tournament } from '../firebase/admin_tournaments';
 import { motion } from 'framer-motion';
-import { LogOut, User, Mail, Phone, Wallet, Activity, CreditCard } from 'lucide-react';
+import { LogOut, User, Mail, Phone, Wallet, Activity, CreditCard, Clock } from 'lucide-react';
 import BuyTokensModal from '../components/dashboard/BuyTokensModal';
 
 const Dashboard = () => {
   const { user, profile, loading, setUser, setProfile } = useAuthStore();
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
+  const [registrations, setRegistrations] = useState<any[]>([]);
+  const [tournaments, setTournaments] = useState<Record<string, Tournament>>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,6 +21,22 @@ const Dashboard = () => {
       navigate('/login');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user) {
+        const regs = await getUserRegistrations(user.uid);
+        setRegistrations(regs);
+        
+        // Fetch all tournaments to map IDs to Names and Schedules
+        const tourns = await getTournaments();
+        const tMap: Record<string, Tournament> = {};
+        tourns.forEach(t => tMap[t.id] = t);
+        setTournaments(tMap);
+      }
+    };
+    fetchData();
+  }, [user]);
 
   if (loading) {
     return (
@@ -121,20 +142,72 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-secondary border border-gray-800 p-8"
+              className="bg-secondary/80 backdrop-blur-md border border-gray-800 p-8 shadow-xl relative overflow-hidden"
             >
-              <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-2">
-                <h3 className="font-display text-2xl text-white">MY TOURNAMENTS</h3>
-                <span className="text-xs text-textMuted bg-gray-800 px-2 py-1">0 ACTIVE</span>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[50px] rounded-full pointer-events-none -mt-20 -mr-20" />
+              
+              <div className="flex justify-between items-center mb-8 border-b border-gray-800/50 pb-4 relative z-10">
+                <h3 className="font-display text-3xl text-white tracking-wider">MY TOURNAMENTS</h3>
+                <span className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1 shadow-[0_0_10px_rgba(224,0,42,0.1)]">
+                  {registrations.length} ACTIVE
+                </span>
               </div>
               
-              <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-gray-700 bg-black/20">
-                <Activity size={40} className="text-gray-600 mb-4" />
-                <p className="text-textMuted mb-4">You haven't registered for any tournaments yet.</p>
-                <button className="px-6 py-2 bg-primary/20 text-primary border border-primary text-sm font-bold tracking-widest hover:bg-primary hover:text-white transition-colors">
-                  BROWSE TOURNAMENTS
-                </button>
-              </div>
+              {registrations.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-gray-700 bg-black/20 relative z-10">
+                  <Activity size={40} className="text-gray-600 mb-4" />
+                  <p className="text-textMuted mb-6 font-medium">You haven't registered for any tournaments yet.</p>
+                  <Link to="/modes" className="group relative px-8 py-3 bg-primary/10 text-primary border border-primary/50 text-sm font-bold tracking-widest hover:bg-primary hover:text-white transition-all overflow-hidden skew-x-[-10deg]">
+                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out skew-x-[10deg]" />
+                    <span className="skew-x-[10deg] inline-block">BROWSE TOURNAMENTS</span>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4 relative z-10">
+                  {registrations.map((reg, index) => {
+                    const tournament = tournaments[reg.tournamentId];
+                    const tName = tournament ? tournament.name : (reg.tournamentId.includes('solo') ? 'SOLO CHAMPIONSHIP' : 'SEASON 1 CHAMPIONSHIP');
+                    const tMode = tournament ? tournament.mode : (reg.mode || 'BATTLE ROYALE');
+                    const startDate = tournament?.startDate ? tournament.startDate.toDate().toLocaleString() : 'TBA';
+                    
+                    return (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + (index * 0.1) }}
+                        key={reg.id} 
+                        className="group relative bg-[#0B0B0F]/80 border border-gray-800/80 p-6 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center hover:border-primary/40 transition-all duration-300"
+                      >
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-[10px] bg-primary/20 text-primary border border-primary/20 px-2 py-0.5 font-bold tracking-widest uppercase">{tMode.replace('_', ' ')}</span>
+                            {reg.type && <span className="text-[10px] bg-white/10 text-white border border-white/10 px-2 py-0.5 font-bold tracking-widest">{reg.type}</span>}
+                          </div>
+                          <h4 className="font-display text-2xl text-white mb-2 group-hover:text-primary transition-colors">{tName}</h4>
+                          <div className="text-sm text-textMuted flex items-center gap-2 font-medium">
+                            <User size={14} className="text-primary/70" /> 
+                            {reg.type === 'SQUAD' || reg.teamName ? reg.teamName : (reg.playerName || profile.username)}
+                          </div>
+                        </div>
+                        <div className="text-left md:text-right w-full md:w-auto bg-black/40 p-4 md:p-0 md:bg-transparent md:border-none border border-gray-800">
+                          <div className="text-[10px] text-textMuted tracking-widest mb-1 flex items-center gap-1 md:justify-end">
+                            <Clock size={12} className="text-primary/70" /> SCHEDULED
+                          </div>
+                          <div className="font-bold text-white text-sm tracking-wide mb-3">{startDate}</div>
+                          <div className={`text-[10px] font-bold tracking-widest inline-flex px-3 py-1 border ${
+                            reg.status === 'CONFIRMED' 
+                              ? 'bg-green-500/10 text-green-400 border-green-500/30' 
+                              : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
+                          }`}>
+                            {reg.status === 'PENDING_APPROVAL' ? 'PENDING APPROVAL' : reg.status}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
             </motion.div>
 
             {/* Transaction History Placeholder */}
