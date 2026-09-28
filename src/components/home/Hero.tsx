@@ -104,19 +104,11 @@ const Hero = () => {
           ) : (
             <>
               <Link
-                to={user ? "/tournament" : "/login"}
-                className="group relative px-6 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
+                to="/modes"
+                className="group relative px-10 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_40px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
               >
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
-                <div className="skew-x-[15deg]">TEAM REGISTRATION</div>
-              </Link>
-
-              <Link
-                to={user ? "/solo-tournament" : "/login"}
-                className="group relative px-6 py-4 bg-primary text-white font-bold tracking-widest overflow-hidden shadow-[0_0_20px_rgba(224,0,42,0.5)] hover:shadow-[0_0_30px_rgba(224,0,42,0.8)] transition-all skew-x-[-15deg]"
-              >
-                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
-                <div className="skew-x-[15deg]">SOLO REGISTRATION</div>
+                <div className="skew-x-[15deg]">BROWSE GAME MODES</div>
               </Link>
 
               {user && (
