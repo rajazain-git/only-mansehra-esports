@@ -9,10 +9,12 @@ import PrizePool from '../components/home/PrizePool';
 import RulesPreview from '../components/home/RulesPreview';
 import Community from '../components/home/Community';
 import FinalCTA from '../components/home/FinalCTA';
+import GlobalWinnerBanner from '../components/home/GlobalWinnerBanner';
 
 const Home = () => {
   return (
     <div className="flex flex-col w-full">
+      <GlobalWinnerBanner />
       <Hero />
       <TournamentOverview />
       <FeaturedTournaments />

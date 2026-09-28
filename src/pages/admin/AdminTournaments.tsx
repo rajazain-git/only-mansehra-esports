@@ -426,7 +426,7 @@ function SelectWinnerModal({ tournament, onClose, onSave }: { tournament: Tourna
       await runTransaction(db, async (transaction) => {
         // Mark winner
         const regRef = doc(db, 'registrations', selectedWinnerId);
-        transaction.update(regRef, { status: 'WINNER', celebrationSeen: false });
+        transaction.update(regRef, { status: 'WINNER', celebrationSeen: false, wonAt: Timestamp.now() });
         
         // Mark tournament completed
         const tourneyRef = doc(db, 'tournaments', tournament.id);

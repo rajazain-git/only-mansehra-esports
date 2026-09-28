@@ -84,7 +84,8 @@ export const markAsWinner = async (registrationId: string) => {
     const regRef = doc(db, 'registrations', registrationId);
     transaction.update(regRef, { 
       status: 'WINNER',
-      celebrationSeen: false 
+      celebrationSeen: false,
+      wonAt: serverTimestamp()
     });
   });
 };
