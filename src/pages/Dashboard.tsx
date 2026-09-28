@@ -5,15 +5,19 @@ import { logoutUser } from '../firebase/auth';
 import { getUserRegistrations } from '../firebase/user_dashboard';
 import { getTournaments } from '../firebase/admin_tournaments';
 import type { Tournament } from '../firebase/admin_tournaments';
-import { motion } from 'framer-motion';
-import { LogOut, User, Mail, Phone, Wallet, Activity, CreditCard, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LogOut, User, Mail, Phone, Wallet, Activity, CreditCard, Clock, Trophy, X } from 'lucide-react';
 import BuyTokensModal from '../components/dashboard/BuyTokensModal';
+import confetti from 'canvas-confetti';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
 const Dashboard = () => {
   const { user, profile, loading, setUser, setProfile } = useAuthStore();
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [tournaments, setTournaments] = useState<Record<string, Tournament>>({});
+  const [winnerCelebrationReg, setWinnerCelebrationReg] = useState<any | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +32,13 @@ const Dashboard = () => {
         const regs = await getUserRegistrations(user.uid);
         setRegistrations(regs);
         
+        // Check for unseen winner celebrations
+        const unseenWinner = regs.find((r: any) => r.status === 'WINNER' && r.celebrationSeen === false);
+        if (unseenWinner) {
+          setWinnerCelebrationReg(unseenWinner);
+          triggerConfetti();
+        }
+
         // Fetch all tournaments to map IDs to Names and Schedules
         const tourns = await getTournaments();
         const tMap: Record<string, Tournament> = {};
@@ -37,6 +48,45 @@ const Dashboard = () => {
     };
     fetchData();
   }, [user]);
+
+  const triggerConfetti = () => {
+    const duration = 5000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const interval: any = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      });
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      });
+    }, 250);
+  };
+
+  const dismissCelebration = async () => {
+    if (winnerCelebrationReg) {
+      try {
+        await updateDoc(doc(db, 'registrations', winnerCelebrationReg.id), {
+          celebrationSeen: true
+        });
+      } catch (err) {
+        console.error("Failed to dismiss celebration", err);
+      }
+      setWinnerCelebrationReg(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -58,7 +108,55 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-[calc(100vh-80px)] py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+      <AnimatePresence>
+        {winnerCelebrationReg && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.8, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-secondary border-2 border-gold/50 p-8 md:p-12 max-w-2xl w-full relative overflow-hidden text-center shadow-[0_0_100px_rgba(255,209,102,0.2)]"
+            >
+              <div className="absolute -top-20 -right-20 w-64 h-64 bg-gold/20 blur-[100px] rounded-full" />
+              <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-gold/20 blur-[100px] rounded-full" />
+              
+              <button 
+                onClick={dismissCelebration}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white z-10"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="relative z-10">
+                <Trophy size={80} className="text-gold mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,209,102,0.5)]" />
+                <h2 className="font-display text-5xl md:text-7xl font-bold text-gold tracking-wider mb-4 leading-none">
+                  CHAMPION!
+                </h2>
+                <h3 className="font-display text-2xl md:text-3xl text-white tracking-widest mb-6">
+                  {tournaments[winnerCelebrationReg.tournamentId]?.name || 'THE TOURNAMENT'}
+                </h3>
+                <p className="text-gray-300 text-lg md:text-xl font-medium max-w-lg mx-auto mb-10 leading-relaxed">
+                  Congratulations <span className="text-white font-bold">{winnerCelebrationReg.teamName || winnerCelebrationReg.playerName || profile.username}</span>! 
+                  You have emerged victorious. The admins have officially marked you as the tournament winner!
+                </p>
+                <button 
+                  onClick={dismissCelebration}
+                  className="bg-gold text-background font-display font-bold text-xl px-12 py-4 tracking-widest hover:bg-white transition-colors skew-x-[-10deg]"
+                >
+                  <span className="skew-x-[10deg] inline-block">CLAIM GLORY</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="container mx-auto max-w-6xl relative z-10">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">

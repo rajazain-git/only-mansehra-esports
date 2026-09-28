@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Check, X, Loader2, Search, Copy, CheckCircle2 } from 'lucide-react';
-import { getRegistrations, approveRegistration, rejectRegistration } from '../../firebase/admin_registrations';
+import { Check, X, Loader2, Search, Copy, CheckCircle2, Trophy } from 'lucide-react';
+import { getRegistrations, approveRegistration, rejectRegistration, markAsWinner } from '../../firebase/admin_registrations';
 
 export default function AdminRegistrations() {
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -53,6 +53,19 @@ export default function AdminRegistrations() {
     } catch (err) {
       console.error(err);
       alert("Failed to reject registration");
+    }
+    setProcessingId(null);
+  };
+
+  const handleWinner = async (id: string) => {
+    if (!window.confirm("Mark this player as the TOURNAMENT WINNER? They will get a special celebration on their dashboard!")) return;
+    setProcessingId(id);
+    try {
+      await markAsWinner(id);
+      await fetchRegistrations();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to mark winner");
     }
     setProcessingId(null);
   };
@@ -144,6 +157,7 @@ export default function AdminRegistrations() {
                       </td>
                       <td className="p-4">
                         <span className={`text-[10px] px-2 py-1 font-bold ${
+                          reg.status === 'WINNER' ? 'bg-gold/20 text-gold border border-gold/50' :
                           reg.status === 'APPROVED' ? 'bg-green-500/10 text-green-500' :
                           reg.status === 'REJECTED' ? 'bg-red-500/10 text-red-500' :
                           'bg-yellow-500/10 text-yellow-500'
@@ -152,26 +166,38 @@ export default function AdminRegistrations() {
                         </span>
                       </td>
                       <td className="p-4 text-right">
-                        {reg.status === 'PENDING_APPROVAL' && (
-                          <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-2">
+                          {reg.status === 'PENDING_APPROVAL' && (
+                            <>
+                              <button 
+                                onClick={() => handleApprove(reg.id)}
+                                disabled={processingId === reg.id}
+                                className="w-8 h-8 bg-green-500/10 hover:bg-green-500 hover:text-white text-green-500 flex items-center justify-center transition-colors disabled:opacity-50 border border-green-500/20 hover:border-green-500"
+                                title="Approve"
+                              >
+                                {processingId === reg.id ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                              </button>
+                              <button 
+                                onClick={() => handleReject(reg.id)}
+                                disabled={processingId === reg.id}
+                                className="w-8 h-8 bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors disabled:opacity-50 border border-red-500/20 hover:border-red-500"
+                                title="Reject & Refund"
+                              >
+                                {processingId === reg.id ? <Loader2 size={16} className="animate-spin" /> : <X size={16} />}
+                              </button>
+                            </>
+                          )}
+                          {reg.status === 'APPROVED' && (
                             <button 
-                              onClick={() => handleApprove(reg.id)}
+                              onClick={() => handleWinner(reg.id)}
                               disabled={processingId === reg.id}
-                              className="w-8 h-8 bg-green-500/10 hover:bg-green-500 hover:text-white text-green-500 flex items-center justify-center transition-colors disabled:opacity-50 border border-green-500/20 hover:border-green-500"
-                              title="Approve"
+                              className="w-8 h-8 bg-gold/10 hover:bg-gold hover:text-background text-gold flex items-center justify-center transition-colors disabled:opacity-50 border border-gold/30 hover:border-gold"
+                              title="Mark as Winner"
                             >
-                              {processingId === reg.id ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                              {processingId === reg.id ? <Loader2 size={16} className="animate-spin" /> : <Trophy size={16} />}
                             </button>
-                            <button 
-                              onClick={() => handleReject(reg.id)}
-                              disabled={processingId === reg.id}
-                              className="w-8 h-8 bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors disabled:opacity-50 border border-red-500/20 hover:border-red-500"
-                              title="Reject & Refund"
-                            >
-                              {processingId === reg.id ? <Loader2 size={16} className="animate-spin" /> : <X size={16} />}
-                            </button>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );

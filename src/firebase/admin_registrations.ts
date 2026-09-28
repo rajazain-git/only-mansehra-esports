@@ -78,3 +78,13 @@ export const rejectRegistration = async (registrationId: string) => {
     transaction.update(regRef, { status: 'REJECTED' });
   });
 };
+
+export const markAsWinner = async (registrationId: string) => {
+  await runTransaction(db, async (transaction) => {
+    const regRef = doc(db, 'registrations', registrationId);
+    transaction.update(regRef, { 
+      status: 'WINNER',
+      celebrationSeen: false 
+    });
+  });
+};
