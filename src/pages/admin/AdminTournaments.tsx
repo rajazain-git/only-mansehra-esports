@@ -151,12 +151,18 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
         finalPosterUrl = await getDownloadURL(snapshot.ref);
       } catch (err) {
         console.error("Error uploading image:", err);
-        alert("Failed to upload poster image.");
+        alert("Failed to upload poster image to Firebase. Try pasting an image link instead.");
         setUploading(false);
         setSaving(false);
         return;
       }
       setUploading(false);
+    } else if (posterPreview) {
+      // If they pasted a URL directly instead of uploading a file
+      finalPosterUrl = posterPreview;
+    } else if (posterPreview === '') {
+      // If they cleared the URL
+      finalPosterUrl = null;
     }
 
     const dataToSave: any = {
@@ -216,19 +222,32 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
             {/* Poster Upload Section */}
             <div>
               <label className="block text-xs font-bold text-textMuted tracking-widest mb-2">TOURNAMENT POSTER (OPTIONAL)</label>
+              
+              {/* Manual URL Input */}
+              <input 
+                type="text" 
+                value={posterPreview}
+                onChange={(e) => {
+                  setPosterPreview(e.target.value);
+                  setPosterFile(null); // Clear file if they paste a URL
+                }}
+                placeholder="Paste Image URL here (e.g. from Discord or Google Images)"
+                className="w-full bg-black/50 border border-gray-800 p-3 text-white focus:border-primary focus:outline-none transition-colors mb-2 text-sm"
+              />
+
               <div className="relative group border-2 border-dashed border-gray-700 hover:border-primary/50 transition-colors rounded-sm overflow-hidden bg-black/30 flex items-center justify-center h-48">
                 {posterPreview ? (
                   <>
                     <img src={posterPreview} alt="Preview" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity">
                       <UploadCloud size={24} className="text-white mb-2" />
-                      <span className="text-white text-xs font-bold tracking-widest">CHANGE POSTER</span>
+                      <span className="text-white text-xs font-bold tracking-widest text-center px-4">CLICK TO UPLOAD FROM DEVICE OR PASTE URL ABOVE</span>
                     </div>
                   </>
                 ) : (
                   <div className="flex flex-col items-center text-gray-500">
                     <ImageIcon size={32} className="mb-2 opacity-50" />
-                    <span className="text-xs font-bold tracking-widest">CLICK TO UPLOAD</span>
+                    <span className="text-xs font-bold tracking-widest">CLICK TO UPLOAD OR PASTE URL</span>
                   </div>
                 )}
                 <input 
