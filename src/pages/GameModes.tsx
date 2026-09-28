@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { getTournaments } from '../firebase/admin_tournaments';
 import type { Tournament, GameMode } from '../firebase/admin_tournaments';
 import { Loader2, Users, Shield, Target, Swords, AlertCircle, Clock, ChevronRight } from 'lucide-react';
-import { BeamsBackground } from '../components/ui/beams-background';
 
 const TABS: { id: GameMode; label: string; icon: any; color: string }[] = [
   { id: 'BATTLE_ROYALE', label: 'BATTLE ROYALE', icon: Shield, color: 'from-blue-500/20 to-blue-600/5' },
@@ -35,30 +34,20 @@ export default function GameModes() {
   const filteredTournaments = tournaments.filter(t => t.mode === activeTab);
 
   return (
-    <BeamsBackground intensity="subtle" className="min-h-screen py-24 px-4 relative overflow-hidden">
+    <div className="min-h-screen py-24 px-4 relative bg-[#060608] overflow-hidden">
       
-      {/* Optimized background glow using CSS gradient instead of expensive blur filter */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[800px] bg-[radial-gradient(ellipse_at_top,_rgba(224,0,42,0.15),_transparent_60%)] pointer-events-none" />
+      {/* Simple static background glow for depth without animation lag */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] max-w-[800px] bg-[radial-gradient(ellipse_at_top,_rgba(224,0,42,0.1),_transparent_70%)] pointer-events-none" />
 
       <div className="container mx-auto max-w-6xl relative z-10">
         
-        <div className="text-center mb-20 relative">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="font-display text-5xl md:text-7xl font-bold text-white tracking-wider mb-6 relative z-10 [text-shadow:0_0_15px_rgba(224,0,42,0.5)]"
-          >
-            GAME <span className="text-primary [text-shadow:0_0_25px_rgba(224,0,42,0.8)]">MODES</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-gray-300 max-w-2xl mx-auto text-lg font-light tracking-wide relative z-10"
-          >
+        <div className="text-center mb-16 relative">
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-white tracking-wider mb-4 relative z-10 [text-shadow:0_0_10px_rgba(224,0,42,0.3)]">
+            GAME <span className="text-primary">MODES</span>
+          </h1>
+          <p className="text-gray-400 max-w-2xl mx-auto text-lg font-light tracking-wide relative z-10">
             Select your battlefield. Whether you fight alone, lead a squad, or face-off in an intense 1v1, your glory awaits.
-          </motion.p>
+          </p>
         </div>
 
         {/* Tabs */}
@@ -113,20 +102,18 @@ export default function GameModes() {
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
                 {filteredTournaments.length === 0 ? (
-                  <div className="col-span-full py-20 text-center border border-gray-800 border-dashed bg-secondary/40 backdrop-blur-sm">
+                  <div className="col-span-full py-20 text-center border border-gray-800 border-dashed bg-secondary/40">
                     <AlertCircle size={50} className="text-gray-500 mx-auto mb-4" />
                     <h3 className="text-white font-display text-2xl tracking-widest mb-2">NO SECRETS UNCOVERED</h3>
                     <p className="text-textMuted text-sm">Check back later for upcoming {activeTab.replace('_', ' ')} tournaments.</p>
                   </div>
                 ) : (
                   filteredTournaments.map((tournament) => (
-                    <motion.div 
+                    <div 
                       key={tournament.id}
-                      whileHover={{ y: -5 }}
-                      className="group relative overflow-hidden flex flex-col bg-[#0B0B0F]/95 border border-gray-800 hover:border-primary/50 transition-colors duration-300 shadow-xl"
+                      className="group relative overflow-hidden flex flex-col bg-[#0B0B0F] border border-gray-800 hover:border-primary/50 transition-all duration-200 hover:-translate-y-1"
                     >
-                      {/* Optimized Hover Glow (no animating via gradient stops) */}
-                      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
                       <div className="p-8 flex-grow relative z-10">
                         <div className="flex justify-between items-start mb-6">
@@ -135,7 +122,7 @@ export default function GameModes() {
                           </h3>
                           <span className={`px-3 py-1 text-xs font-bold tracking-widest uppercase border ${
                             tournament.registrationStatus === 'OPEN' 
-                              ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-sm' 
+                              ? 'bg-green-500/10 text-green-400 border-green-500/30' 
                               : 'bg-red-500/10 text-red-500 border-red-500/30'
                           }`}>
                             {tournament.registrationStatus}
@@ -168,9 +155,8 @@ export default function GameModes() {
                         {tournament.registrationStatus === 'OPEN' ? (
                           <Link 
                             to={`/tournaments/${tournament.id}/register`}
-                            className="group/btn relative w-full flex items-center justify-center py-4 bg-primary/10 text-primary border border-primary/30 hover:bg-primary hover:text-white font-bold tracking-widest text-sm transition-all overflow-hidden"
+                            className="group/btn relative w-full flex items-center justify-center py-4 bg-primary/10 text-primary border border-primary/30 hover:bg-primary hover:text-white font-bold tracking-widest text-sm transition-colors duration-200"
                           >
-                            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-500 ease-in-out skew-x-[-20deg]" />
                             <span className="flex items-center gap-2">REGISTER NOW <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform"/></span>
                           </Link>
                         ) : (
@@ -182,7 +168,7 @@ export default function GameModes() {
                           </button>
                         )}
                       </div>
-                    </motion.div>
+                    </div>
                   ))
                 )}
               </motion.div>
@@ -191,6 +177,6 @@ export default function GameModes() {
         </div>
 
       </div>
-    </BeamsBackground>
+    </div>
   );
 }
