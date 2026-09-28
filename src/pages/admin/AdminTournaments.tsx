@@ -186,14 +186,10 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
       posterUrl: finalPosterUrl,
     };
 
-    if (formData.mode === 'BATTLE_ROYALE') {
-      dataToSave.brOptions = {
-        solo: formData.brSolo,
-        squad: formData.brSquad,
-      };
-    } else {
-      dataToSave.brOptions = null;
-    }
+    dataToSave.brOptions = {
+      solo: formData.brSolo,
+      squad: formData.brSquad,
+    };
 
     try {
       if (tournament?.id) {
@@ -307,31 +303,29 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
               </div>
             </div>
 
-            {formData.mode === 'BATTLE_ROYALE' && (
-              <div className="p-4 bg-black/30 border border-gray-800 space-y-3">
-                <label className="block text-xs font-bold text-primary tracking-widest">BATTLE ROYALE OPTIONS</label>
-                <div className="flex gap-6">
-                  <label className="flex items-center gap-2 text-sm text-white cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={formData.brSolo}
-                      onChange={e => setFormData({...formData, brSolo: e.target.checked})}
-                      className="accent-primary w-4 h-4"
-                    />
-                    ALLOW SOLO
-                  </label>
-                  <label className="flex items-center gap-2 text-sm text-white cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={formData.brSquad}
-                      onChange={e => setFormData({...formData, brSquad: e.target.checked})}
-                      className="accent-primary w-4 h-4"
-                    />
-                    ALLOW SQUAD
-                  </label>
-                </div>
+            <div className="p-4 bg-black/30 border border-gray-800 space-y-3">
+              <label className="block text-xs font-bold text-primary tracking-widest">REGISTRATION FORMAT ALLOWED</label>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 text-sm text-white cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.brSolo}
+                    onChange={e => setFormData({...formData, brSolo: e.target.checked})}
+                    className="accent-primary w-4 h-4"
+                  />
+                  ALLOW SOLO
+                </label>
+                <label className="flex items-center gap-2 text-sm text-white cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.brSquad}
+                    onChange={e => setFormData({...formData, brSquad: e.target.checked})}
+                    className="accent-primary w-4 h-4"
+                  />
+                  ALLOW TEAM/SQUAD
+                </label>
               </div>
-            )}
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>

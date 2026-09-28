@@ -64,12 +64,14 @@ export default function Registration() {
           const data = docSnap.data() as Tournament;
           setTournament(data);
           
-          if (data.mode === 'LONE_WOLF') setRegistrationType('SOLO');
-          if (data.mode === 'CLASH_SQUAD') setRegistrationType('SQUAD');
-          if (data.mode === 'BATTLE_ROYALE') {
-             if (data.brOptions?.solo && !data.brOptions?.squad) setRegistrationType('SOLO');
-             if (!data.brOptions?.solo && data.brOptions?.squad) setRegistrationType('SQUAD');
-             // If both, let user pick
+          if (data.brOptions) {
+             if (data.brOptions.solo && !data.brOptions.squad) setRegistrationType('SOLO');
+             if (!data.brOptions.solo && data.brOptions.squad) setRegistrationType('SQUAD');
+             // If both, let user pick (registrationType remains null)
+          } else {
+             // Fallback for older tournaments created without these options
+             if (data.mode === 'LONE_WOLF') setRegistrationType('SOLO');
+             if (data.mode === 'CLASH_SQUAD') setRegistrationType('SQUAD');
           }
         } else {
           setError("Tournament not found");
@@ -246,10 +248,10 @@ export default function Registration() {
           className="bg-[#0B0B0F]/95 border border-primary/20 shadow-xl p-6 md:p-10 relative overflow-hidden animate-fade-in-up"
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[50px] rounded-full pointer-events-none -mr-40 -mt-40" />
-          {/* Pick type if BR allows both */}
-          {tournament?.mode === 'BATTLE_ROYALE' && !registrationType && (
+          {/* Pick type if tournament allows both */}
+          {!registrationType && (
             <div className="text-center py-8">
-              <h3 className="text-white font-bold tracking-widest mb-6">SELECT REGISTRATION TYPE</h3>
+              <h3 className="text-white font-bold tracking-widest mb-6">SELECT REGISTRATION FORMAT</h3>
               <div className="flex gap-4 justify-center">
                 <button 
                   onClick={() => setRegistrationType('SOLO')}
