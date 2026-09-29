@@ -17,6 +17,8 @@ export interface Tournament {
   maxParticipants?: number;
   currentParticipants?: number;
   posterUrl?: string;
+  prizePool?: string;
+  description?: string;
   createdAt: Timestamp;
 }
 

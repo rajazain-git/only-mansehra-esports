@@ -137,6 +137,8 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
     brSquad: tournament?.brOptions?.squad ?? true,
     maxParticipants: tournament?.maxParticipants || '',
     startDateStr: tournament?.startDate ? new Date(tournament.startDate.toDate()).toISOString().slice(0, 16) : '',
+    prizePool: tournament?.prizePool || '',
+    description: tournament?.description || '',
   });
 
   const [posterFile, setPosterFile] = useState<File | null>(null);
@@ -190,6 +192,8 @@ function TournamentModal({ tournament, onClose, onSave }: { tournament: Tourname
       currentParticipants: tournament?.currentParticipants || 0,
       startDate: formData.startDateStr ? Timestamp.fromDate(new Date(formData.startDateStr)) : null,
       posterUrl: finalPosterUrl,
+      prizePool: formData.prizePool,
+      description: formData.description,
     };
 
     dataToSave.brOptions = {
