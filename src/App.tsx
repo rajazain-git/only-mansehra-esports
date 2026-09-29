@@ -72,10 +72,24 @@ function App() {
           if (userDoc.exists()) {
             setProfile(userDoc.data() as UserProfile);
           } else {
-            setProfile(null);
+            // Auto-create profile for legacy users
+            const { setDoc, serverTimestamp } = await import('firebase/firestore');
+            const newProfile = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              username: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Player',
+              fullName: firebaseUser.displayName || 'Player',
+              phone: '',
+              role: 'user',
+              tokenBalance: 0,
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp()
+            };
+            await setDoc(userDocRef, newProfile);
+            setProfile(newProfile as unknown as UserProfile);
           }
         } catch (error) {
-          console.error("Error fetching user profile:", error);
+          console.error("Error fetching/creating user profile:", error);
           setProfile(null);
         }
       } else {

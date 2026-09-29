@@ -39,28 +39,30 @@ const Dashboard = () => {
     const fetchData = async () => {
       if (user) {
         setDataLoading(true);
-        const [regs, txs, tourns] = await Promise.all([
-          getUserRegistrations(user.uid),
-          getUserTransactions(user.uid),
-          getTournaments()
-        ]);
-        
-        setRegistrations(regs);
-        setTransactions(txs);
-        
-        // Check for unseen winner celebrations
-        const unseenWinner = regs.find((r: any) => r.status === 'WINNER' && r.celebrationSeen === false);
-        if (unseenWinner) {
-          setWinnerCelebrationReg(unseenWinner);
-          triggerConfetti();
-        }
+        try {
+          const [regs, txs, tourns] = await Promise.all([
+            getUserRegistrations(user.uid),
+            getUserTransactions(user.uid),
+            getTournaments()
+          ]);
+          
+          setRegistrations(regs);
+          setTransactions(txs);
+          
+          const unseenWinner = regs.find((r: any) => r.status === 'WINNER' && r.celebrationSeen === false);
+          if (unseenWinner) {
+            setWinnerCelebrationReg(unseenWinner);
+            triggerConfetti();
+          }
 
-        // Map tournaments
-        const tMap: Record<string, Tournament> = {};
-        tourns.forEach(t => tMap[t.id] = t);
-        setTournaments(tMap);
-        
-        setDataLoading(false);
+          const tMap: Record<string, Tournament> = {};
+          tourns.forEach(t => tMap[t.id] = t);
+          setTournaments(tMap);
+        } catch (err) {
+          console.error("Dashboard data fetch error", err);
+        } finally {
+          setDataLoading(false);
+        }
       }
     };
     fetchData();
