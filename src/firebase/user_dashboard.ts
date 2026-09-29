@@ -33,3 +33,23 @@ export const getUserRegistrations = async (userId: string) => {
     return [];
   }
 };
+
+export const getUserTransactions = async (userId: string) => {
+  try {
+    const q = query(
+      collection(db, 'transactions'),
+      where('userId', '==', userId)
+    );
+    const snap = await getDocs(q);
+    const transactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    return transactions.sort((a: any, b: any) => {
+      const aTime = a.createdAt?.toMillis() || 0;
+      const bTime = b.createdAt?.toMillis() || 0;
+      return bTime - aTime;
+    });
+  } catch (err) {
+    console.error("Error fetching user transactions:", err);
+    return [];
+  }
+};
