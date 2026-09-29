@@ -175,7 +175,7 @@ const FeaturedTournaments = () => {
                 animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
                 exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-40 transition-all duration-500 hover:mix-blend-normal hover:opacity-80"
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${activeTournament.status === 'OPEN' ? 'opacity-90 hover:opacity-100' : 'mix-blend-luminosity opacity-40 hover:mix-blend-normal hover:opacity-80'}`}
               />
             </AnimatePresence>
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-background/50" />
@@ -197,7 +197,7 @@ const FeaturedTournaments = () => {
               >
                 <div className="flex items-center gap-3 mb-6">
                   <div className={`px-3 py-1 text-xs font-bold tracking-widest uppercase border ${
-                    activeTournament.status === 'ACTIVE' 
+                    activeTournament.status === 'OPEN' 
                       ? 'border-primary text-primary bg-primary/10' 
                       : 'border-silver text-silver bg-silver/10'
                   }`}>
