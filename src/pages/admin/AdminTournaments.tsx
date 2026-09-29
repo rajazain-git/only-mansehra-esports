@@ -85,6 +85,12 @@ export default function AdminTournaments() {
 
               <div className="flex gap-2 border-t border-gray-800 pt-4">
                 <button 
+                  onClick={() => window.location.href = `/admin/tournaments/${t.id}/bracket`}
+                  className="flex-1 flex items-center justify-center gap-2 bg-primary/20 hover:bg-primary border border-primary/30 text-white py-2 text-xs font-bold tracking-widest transition-colors"
+                >
+                  <Trophy size={14} /> BRACKET
+                </button>
+                <button 
                   onClick={() => handleEditTournament(t)}
                   className="flex-1 flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white py-2 text-xs font-bold tracking-widest transition-colors"
                 >

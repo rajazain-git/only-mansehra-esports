@@ -22,6 +22,9 @@ import AdminRegistrations from './pages/admin/AdminRegistrations';
 
 import Registration from './pages/Registration';
 import AdminTournaments from './pages/admin/AdminTournaments';
+import AdminBracket from './pages/admin/AdminBracket';
+import Leaderboard from './pages/Leaderboard';
+import TournamentBracket from './pages/TournamentBracket';
 
 const router = createBrowserRouter([
   {
@@ -34,7 +37,8 @@ const router = createBrowserRouter([
       { path: 'schedule', element: <div className="p-20 text-center">Schedule Page Coming Soon</div> },
       { path: 'modes', element: <GameModes /> },
       { path: 'tournaments/:id/register', element: <Registration /> },
-      { path: 'leaderboard', element: <div className="p-20 text-center">Leaderboard Page Coming Soon</div> },
+      { path: 'tournaments/:id/bracket', element: <TournamentBracket /> },
+      { path: 'leaderboard', element: <Leaderboard /> },
       { path: 'rules', element: <div className="p-20 text-center">Rules Page Coming Soon</div> },
       { path: 'prizes', element: <div className="p-20 text-center">Prizes Page Coming Soon</div> },
       { path: 'login', element: <Login /> },
@@ -54,6 +58,7 @@ const router = createBrowserRouter([
       { path: 'registrations', element: <AdminRegistrations /> },
       { path: 'users', element: <AdminUsers /> },
       { path: 'tournaments', element: <AdminTournaments /> },
+      { path: 'tournaments/:id/bracket', element: <AdminBracket /> },
       { path: 'settings', element: <div className="p-10 text-textMuted">Settings Coming Soon</div> },
     ]
   }

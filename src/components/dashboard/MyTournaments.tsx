@@ -83,6 +83,11 @@ export default function MyTournaments({ registrations, tournaments }: any) {
                   <div>PASSWORD: <span className="text-white">{tournament?.roomPassword || 'TBA'}</span></div>
                 </div>
               )}
+              <div className="mt-4">
+                 <button onClick={() => window.location.href = `/tournaments/${reg.tournamentId}/bracket`} className="text-xs bg-gray-800 hover:bg-white hover:text-black transition-colors px-3 py-1 font-bold tracking-widest">
+                   VIEW BRACKET
+                 </button>
+              </div>
             </div>
             
             <div className="flex flex-col items-start md:items-end w-full md:w-auto bg-black/40 p-4 md:p-0 md:bg-transparent md:border-none border border-gray-800 gap-3">
