@@ -102,7 +102,30 @@ const Dashboard = () => {
     );
   }
 
-  if (!user || !profile) return null;
+  if (!user) return null;
+
+  const handleLogout = async () => {
+    // Basic fallback if they are stuck
+    const { logoutUser } = await import('../firebase/auth');
+    await logoutUser();
+    useAuthStore.getState().setUser(null);
+    useAuthStore.getState().setProfile(null);
+    navigate('/');
+  };
+
+  if (!profile) {
+    return (
+      <div className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center bg-background text-white p-4 text-center">
+        <h2 className="text-3xl font-bold text-red-500 mb-4">PROFILE NOT FOUND</h2>
+        <p className="text-textMuted mb-6 max-w-md">
+          Your account exists, but we couldn't find your player profile data. This usually happens if your account was created incompletely. Please log out and register again or contact support.
+        </p>
+        <button onClick={handleLogout} className="bg-primary text-white font-bold tracking-widest px-8 py-3 skew-x-[-10deg]">
+          <div className="skew-x-[10deg]">LOGOUT</div>
+        </button>
+      </div>
+    );
+  }
 
   const renderContent = () => {
     switch (activeTab) {
