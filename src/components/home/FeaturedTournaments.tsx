@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Trophy, Users, ChevronRight } from 'lucide-react';
 
@@ -59,10 +59,41 @@ const TOURNAMENTS = [
 ];
 
 const FeaturedTournaments = () => {
-  const [activeId, setActiveId] = useState(TOURNAMENTS[0].id);
+  const [activeId, setActiveId] = useState<string>('');
+  const [tournamentsList, setTournamentsList] = useState(TOURNAMENTS);
   const shouldReduceMotion = useReducedMotion();
 
-  const activeTournament = TOURNAMENTS.find(t => t.id === activeId) || TOURNAMENTS[0];
+  useEffect(() => {
+    const loadTournaments = async () => {
+      try {
+        const { getTournaments } = await import('../../firebase/admin_tournaments');
+        const liveTournaments = await getTournaments();
+        if (liveTournaments && liveTournaments.length > 0) {
+          const mapped = liveTournaments.map(t => ({
+            id: t.id,
+            title: t.name,
+            category: t.mode.replace('_', ' '),
+            status: t.registrationStatus,
+            prizePool: 'TBA',
+            description: `Compete in the upcoming ${t.name} tournament.`,
+            image: t.posterUrl || generatePlaceholder(t.name.substring(0, 3).toUpperCase())
+          }));
+          setTournamentsList(mapped.slice(0, 4));
+          setActiveId(mapped[0].id);
+        } else {
+          setActiveId(TOURNAMENTS[0].id);
+        }
+      } catch (e) {
+        console.error("Failed to load tournaments", e);
+        setActiveId(TOURNAMENTS[0].id);
+      }
+    };
+    loadTournaments();
+  }, []);
+
+  const activeTournament = tournamentsList.find(t => t.id === activeId) || tournamentsList[0];
+
+  if (!activeTournament) return null;
 
   return (
     <section className="py-20 relative border-t border-gray-800 overflow-hidden bg-background">
@@ -100,7 +131,7 @@ const FeaturedTournaments = () => {
           
           {/* Left: List */}
           <div className="lg:col-span-4 flex flex-col gap-4">
-            {TOURNAMENTS.map((t) => {
+            {tournamentsList.map((t) => {
               const isActive = t.id === activeId;
               return (
                 <button
@@ -194,7 +225,7 @@ const FeaturedTournaments = () => {
                 </div>
 
                 <div className="mt-auto">
-                  <button className="w-full py-4 border border-primary text-primary font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all duration-300 box-glow skew-x-[-10deg]">
+                  <button onClick={() => window.location.href = `/tournaments/${activeTournament.id}/register`} className="w-full py-4 border border-primary text-primary font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all duration-300 box-glow skew-x-[-10deg]">
                     <div className="skew-x-[10deg]">VIEW DETAILS</div>
                   </button>
                 </div>
