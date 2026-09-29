@@ -32,7 +32,7 @@ export const getMatches = async (tournamentId: string): Promise<Match[]> => {
 export const generateSingleElimination = async (tournamentId: string, participants: {id: string, name: string}[]) => {
   const batch = writeBatch(db);
   const total = participants.length;
-  if (total < 2) throw new Error("Not enough participants");
+  if (total < 2) throw new Error("Bracket generate karne ke liye kam iz kam 2 'APPROVED' players ya teams ka hona zaroori hai. Pehle Admin Panel > Registrations mein ja kar logon ko approve karein.");
 
   const rounds = Math.ceil(Math.log2(total));
   

@@ -39,9 +39,9 @@ export default function AdminBracket() {
 
       await generateSingleElimination(tournamentId, regs);
       await fetchBracket();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to generate bracket.");
+      alert(err.message || "Failed to generate bracket.");
     } finally {
       setGenerating(false);
     }
